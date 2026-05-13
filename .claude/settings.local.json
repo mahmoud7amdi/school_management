@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs wc -l)",
+      "Bash(./mvnw.cmd -q compile)",
+      "Bash(./mvnw.cmd -q -DskipTests package)"
+    ]
+  }
+}

@@ -27,9 +27,15 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        // This completely bypasses Spring Security for static resources and the dashboard.
+        // Bypass Spring Security for dashboard views and static resources.
+        // Per-page auth is enforced client-side via the JWT in localStorage; all
+        // backend API calls (/api/**) still require authentication.
         return web -> web.ignoring().requestMatchers(
+                "/login",
+                "/",
+                "/dashboard",
                 "/dashboard/**",
+                "/index.html",
                 "/assets/**",
                 "/css/**",
                 "/js/**",

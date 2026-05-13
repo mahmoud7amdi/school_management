@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   dropdownSubmenus.forEach((submenu) => {
     submenu.addEventListener('click', (event) => {
       const submenuDropdown = submenu.querySelector('.dropdown-menu');
+      if (!submenuDropdown) return;
 
       // Allow navigation for valid links
       const targetLink = event.target.closest('a');
@@ -38,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
 
       // Toggle the submenu visibility
-      submenuDropdown.classList.toggle('show', isVisible);
+      submenuDropdown.classList.toggle('show');
     });
   });
 });
@@ -123,5 +124,8 @@ window.addEventListener('resize', setSidebarHeight);
 
 // Optional: Adjust the sidebar height when content changes dynamically
 // (e.g., if using AJAX or other dynamic content loading)
-const observer = new MutationObserver(setSidebarHeight);
-observer.observe(document.getElementById('content'), { childList: true, subtree: true });
+const contentEl = document.getElementById('content');
+if (contentEl) {
+  const observer = new MutationObserver(setSidebarHeight);
+  observer.observe(contentEl, { childList: true, subtree: true });
+}

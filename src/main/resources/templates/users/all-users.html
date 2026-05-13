@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('All Users')}"></head>
+<body>
+
+<div>
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+    <div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+    <div id="content" class="position-relative h-100">
+        <div th:replace="~{fragments/layout :: topbar}"></div>
+
+        <div class="custom-container">
+            <!-- Page header -->
+            <div class="page-header">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-1">
+                            <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Users</li>
+                        </ol>
+                    </nav>
+                    <h1>All Users</h1>
+                </div>
+                <div class="d-flex gap-2">
+                    <div class="input-group input-group-sm" style="max-width: 260px;">
+                        <span class="input-group-text bg-transparent"><i class="ti ti-search"></i></span>
+                        <input type="text" id="userSearch" class="form-control" placeholder="Search users..." />
+                    </div>
+                    <a th:href="@{/dashboard/users/add}" class="btn btn-primary">
+                        <i class="ti ti-plus me-1"></i> Add User
+                    </a>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table app-table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th class="school-col">School</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr><td colspan="7" class="table-state"><i class="ti ti-loader-2"></i> Loading users...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit user modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="editUserForm" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="editUserModalLabel">Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editAlertContainer"></div>
+                    <input type="hidden" id="editUserId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="editUsername">Username</label>
+                        <input type="text" id="editUsername" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editEmail">Email</label>
+                        <input type="email" id="editEmail" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editPassword">Password <small class="text-muted">(leave blank to keep current)</small></label>
+                        <input type="password" id="editPassword" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="editRole">Role</label>
+                        <select id="editRole" class="form-select" required></select>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="editActive" />
+                        <label class="form-check-label" for="editActive">Active</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="updateBtn">Update User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script th:src="@{/assets/js/users.js}"></script>
+
+</body>
+</html>
