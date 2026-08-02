@@ -1,6 +1,20 @@
-/* App-specific overrides on top of theme.css. Keep this file small. */
+/*
+ * App layer on top of theme.css.
+ *
+ * Everything here is expressed with --ds-* custom properties so light and dark
+ * mode both work without a second set of rules.
+ */
 
-/* Page header (breadcrumb + title block). */
+/* ------------------------------------------------------------------ layout */
+
+/* #content already carries the page padding from theme.css; this only caps the
+   measure so wide tables stay readable on large monitors. */
+.custom-container {
+    width: 100%;
+    max-width: 1400px;
+    margin-inline: auto;
+}
+
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -9,26 +23,129 @@
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
+
 .page-header .breadcrumb {
     margin-bottom: 0.25rem;
     font-size: 0.8125rem;
 }
+
 .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
+    line-height: 1.3;
 }
 
-/* Stat card used on dashboard home. */
+.page-header .page-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: var(--ds-secondary-color);
+}
+
+/* Toolbar above a table: search grows, actions stay put. */
+.table-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.table-toolbar .toolbar-search {
+    flex: 1 1 240px;
+    min-width: 200px;
+    max-width: 420px;
+}
+
+.table-toolbar .toolbar-filter {
+    flex: 0 1 190px;
+    min-width: 160px;
+}
+
+.table-toolbar .toolbar-spacer {
+    flex: 1 1 auto;
+}
+
+/* ------------------------------------------------------- ghost buttons */
+
+/*
+ * .btn-ghost-* is used throughout the templates (row actions, topbar icons) but
+ * theme.css never defined it, so those controls rendered unstyled. Transparent
+ * until hover, tinted with the semantic colour on interaction.
+ */
+.btn-ghost-primary,
+.btn-ghost-secondary,
+.btn-ghost-success,
+.btn-ghost-danger {
+    background-color: transparent;
+    border-color: transparent;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-ghost-primary {
+    color: var(--ds-primary);
+}
+.btn-ghost-secondary {
+    color: var(--ds-secondary-color);
+}
+.btn-ghost-success {
+    color: var(--ds-success);
+}
+.btn-ghost-danger {
+    color: var(--ds-danger);
+}
+
+.btn-ghost-primary:hover,
+.btn-ghost-primary:focus-visible {
+    background-color: var(--ds-primary-bg-subtle);
+    color: var(--ds-primary-text-emphasis);
+}
+.btn-ghost-secondary:hover,
+.btn-ghost-secondary:focus-visible {
+    background-color: var(--ds-secondary-bg-subtle);
+    color: var(--ds-body-color);
+}
+.btn-ghost-success:hover,
+.btn-ghost-success:focus-visible {
+    background-color: var(--ds-success-bg-subtle);
+    color: var(--ds-success-text-emphasis);
+}
+.btn-ghost-danger:hover,
+.btn-ghost-danger:focus-visible {
+    background-color: var(--ds-danger-bg-subtle);
+    color: var(--ds-danger-text-emphasis);
+}
+
+/* Square icon-only button, sized so a rounded-circle variant stays a circle. */
+.btn-icon {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.btn-icon.btn-sm {
+    width: 32px;
+    height: 32px;
+}
+
+/* --------------------------------------------------------------- stat cards */
+
 .stat-card {
-    border: 1px solid var(--ds-gray-200);
+    border: 1px solid var(--ds-card-border-color);
     border-radius: 0.75rem;
+    height: 100%;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+
 .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 24px -8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 24px -8px rgba(0, 0, 0, 0.12);
 }
+
 .stat-card .stat-icon {
     width: 48px;
     height: 48px;
@@ -37,27 +154,74 @@
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    flex: 0 0 auto;
 }
 
-/* Table polish. */
+.stat-card .stat-label {
+    font-size: 0.8125rem;
+    color: var(--ds-secondary-color);
+    margin-bottom: 0.125rem;
+}
+
+.stat-card .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* Welcome banner on the dashboard home. */
+.welcome-card {
+    border: 0;
+    background: linear-gradient(135deg, var(--ds-primary-bg-subtle), transparent);
+}
+
+/* ------------------------------------------------------------------ tables */
+
 .app-table thead th {
     text-transform: uppercase;
     letter-spacing: 0.04em;
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--ds-gray-600);
+    color: var(--ds-secondary-color);
     background-color: var(--ds-gray-100);
-    border-bottom: 1px solid var(--ds-gray-200);
+    border-bottom: 1px solid var(--ds-border-color);
+    white-space: nowrap;
 }
+
 .app-table tbody td {
     vertical-align: middle;
 }
+
+.app-table tbody tr:hover {
+    background-color: var(--ds-gray-100);
+}
+
+/* Row action buttons sit together and stay on one line. */
+.app-table .row-actions {
+    white-space: nowrap;
+}
+
 .app-table .row-actions .btn {
     padding: 0.25rem;
     line-height: 1;
 }
 
-/* Avatar circle used in table rows. */
+/* Loading / empty / error state inside a table body. */
+.table-state {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--ds-secondary-color);
+}
+
+.table-state i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+}
+
+/* Initials avatar, used where there is no photo. */
 .avatar-initial {
     width: 36px;
     height: 36px;
@@ -66,35 +230,109 @@
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     background-color: var(--ds-primary-bg-subtle);
     color: var(--ds-primary-text-emphasis);
+    flex: 0 0 auto;
+    text-transform: uppercase;
 }
 
-/* Empty / loading states inside table. */
-.table-state {
-    padding: 3rem 1rem;
-    text-align: center;
-    color: var(--ds-gray-600);
-}
-.table-state i {
-    font-size: 2.5rem;
-    display: block;
-    margin-bottom: 0.5rem;
-    opacity: 0.5;
-}
+/* --------------------------------------------------------------------- misc */
 
-/* Form card max width on add pages. */
+/* Add/edit forms are single-column reading width, not full bleed. */
 .form-card {
-    max-width: 720px;
+    max-width: 860px;
 }
 
-/* Make the topbar sidebar-toggle visible. */
-.btn-icon {
-    width: 38px;
-    height: 38px;
-    padding: 0;
-    display: inline-flex;
+.form-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ds-secondary-color);
+    margin-bottom: 0.75rem;
+}
+
+.form-section + .form-section {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--ds-border-color);
+}
+
+/* Toast stack, top-right, above modals. */
+.toast-stack {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1090;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: min(380px, calc(100vw - 2rem));
+}
+
+/* Simple bar chart for the dashboard breakdown, no charting library needed. */
+.mini-bar {
+    display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.75rem;
+}
+
+.mini-bar + .mini-bar {
+    margin-top: 0.75rem;
+}
+
+.mini-bar .mini-bar-label {
+    flex: 0 0 30%;
+    font-size: 0.8125rem;
+    color: var(--ds-body-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mini-bar .mini-bar-track {
+    flex: 1 1 auto;
+    height: 8px;
+    border-radius: 999px;
+    background-color: var(--ds-gray-200);
+    overflow: hidden;
+}
+
+.mini-bar .mini-bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background-color: var(--ds-primary);
+}
+
+.mini-bar .mini-bar-value {
+    flex: 0 0 auto;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    min-width: 2ch;
+    text-align: right;
+}
+
+/* Pagination footer under a table. */
+.table-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid var(--ds-border-color);
+    font-size: 0.8125rem;
+    color: var(--ds-secondary-color);
+}
+
+.table-footer .pagination {
+    margin: 0;
+}
+
+/* Hidden until the client decides the role may see it, so restricted nav items
+   never flash on screen for the wrong user. */
+[data-requires-role] {
+    display: none;
 }

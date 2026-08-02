@@ -1,34 +1,36 @@
 package com.smartedu.school_management_api.service;
 
-import com.smartedu.school_management_api.dto.LoginResponse;
-import com.smartedu.school_management_api.entity.User;
+import com.smartedu.school_management_api.dto.auth.LoginResponse;
+import com.smartedu.school_management_api.dto.user.CreateUserRequest;
+import com.smartedu.school_management_api.dto.user.UpdateProfileRequest;
+import com.smartedu.school_management_api.dto.user.UpdateUserRequest;
+import com.smartedu.school_management_api.dto.user.UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
 
-    // 1. إنشاء مستخدم جديد بواسطة الإدمن (مع تشفير الباسورد)
-    User createUser(User user);
-
-    // 2. تسجيل الدخول (للمصادقة الأولية)
     LoginResponse login(String username, String password);
 
-    // 3. تسجيل الخروج وإلغاء التوكن
     void logout(HttpServletRequest request);
 
-    // 4. جلب جميع المستخدمين
-    List<User> getAllUsers();
+    UserResponse createUser(CreateUserRequest request);
 
-    // 5. جلب مستخدم معين بواسطة ID
-    User getUserById(Long id);
+    List<UserResponse> getAllUsers();
 
-    // 6. تحديث بيانات المستخدم
-    User updateUser(Long id, User userDetails);
+    UserResponse getUserById(UUID id);
 
-    // 7. حذف مستخدم من النظام
-    void deleteUser(Long id);
+    UserResponse getCurrentUser();
 
-    // 8. البحث عن مستخدم بواسطة اسم المستخدم (مفيدة للـ Security لاحقاً)
-    User getUserByUsername(String username);
+    UserResponse updateUser(UUID id, UpdateUserRequest request);
+
+    /** Self-service update for the signed-in user, whatever their role. */
+    UserResponse updateOwnProfile(UpdateProfileRequest request);
+
+    void deleteUser(UUID id);
+
+    /** Teachers in the caller's school, for the classroom homeroom picker. */
+    List<UserResponse> getAssignableTeachers();
 }

@@ -1,145 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta content="Codescandy" name="author">
-    <title>Sign In | Dasher - Responsive Bootstrap 5 Admin Dashboard</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Sign in | School Management</title>
 
-    <!-- Favicon icons -->
     <link rel="apple-touch-icon" sizes="57x57" th:href="@{/assets/images/favicon/apple-icon-57x57.png}" />
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets/images/favicon/favicon-32x32.png}" />
     <link rel="icon" type="image/png" sizes="16x16" th:href="@{/assets/images/favicon/favicon-16x16.png}" />
 
-    <!-- Color modes -->
     <script th:src="@{/assets/js/vendors/color-modes.js}"></script>
 
-    <!-- Libs CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
-
-    <!-- Theme CSS -->
     <link rel="stylesheet" th:href="@{/assets/css/theme.css}" />
+    <link rel="stylesheet" th:href="@{/assets/css/app.css}" />
 </head>
 
 <body>
-    <!-- content -->
-    <main class="container d-flex flex-column h-100">
-        <div class="row align-items-center justify-content-center g-0 min-vh-100">
-            <div class="col-12 col-md-8 col-lg-6 col-xxl-4 py-8 py-xl-0">
-                <!-- Card -->
-                <div class="card shadow-sm">
-                    <!-- Card body -->
-                    <div class="card-body p-6">
-                        <div class="mb-4 text-center">
-                            <a href="/">
-                                <img th:src="@{/assets/images/brand/logo/logo-icon.svg}" class="mb-2" alt="Logo" />
-                            </a>
-                            <h1 class="mb-1 fw-bold">Sign in</h1>
-                            <p>Please enter your user information.</p>
-                        </div>
-                        <!-- Form -->
-                        <form id="loginForm" class="needs-validation" novalidate>
-                            <!-- Username -->
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" id="username" class="form-control" name="username" placeholder="Enter username" required />
-                                <div class="invalid-feedback">Please enter username.</div>
-                            </div>
-                            <!-- Password -->
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <div class="password-field position-relative">
-                                    <input type="password" id="password" class="form-control fakePassword" name="password" placeholder="**************" required />
-                                    <span><i class="ti ti-eye-off passwordToggler"></i></span>
-                                    <div class="invalid-feedback">Please enter password.</div>
-                                </div>
-                            </div>
-                            <!-- Checkbox -->
-                            <div class="d-lg-flex justify-content-between align-items-center mb-4">
-                                <div class="form-check custom-checkbox">
-                                    <input type="checkbox" class="form-check-input" id="rememberme" />
-                                    <label class="form-check-label" for="rememberme">Remember me</label>
-                                </div>
-                            </div>
-                            <div id="loginError" class="alert alert-danger d-none" role="alert">
-                                Invalid username or password.
-                            </div>
-                            <!-- Button -->
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary" id="loginBtn">Sign in</button>
-                            </div>
-                        </form>
+<main class="container d-flex flex-column h-100">
+    <div class="row align-items-center justify-content-center g-0 min-vh-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xxl-4 py-8 py-xl-0">
+            <div class="card shadow-sm">
+                <div class="card-body p-6">
+                    <div class="mb-4 text-center">
+                        <a th:href="@{/}">
+                            <img th:src="@{/assets/images/brand/logo/logo-icon.svg}" class="mb-2" alt="School Management" />
+                        </a>
+                        <h1 class="mb-1 fw-bold fs-3">Sign in</h1>
+                        <p class="text-secondary mb-0">Welcome back. Enter your details to continue.</p>
                     </div>
+
+                    <form id="loginForm" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" id="username" name="username" class="form-control"
+                                   placeholder="Enter your username" autocomplete="username" required autofocus />
+                            <div class="invalid-feedback">Please enter your username.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="password-field position-relative">
+                                <input type="password" id="password" name="password"
+                                       class="form-control fakePassword" placeholder="Enter your password"
+                                       autocomplete="current-password" required />
+                                <span><i class="ti ti-eye-off passwordToggler" role="button" aria-label="Show password"></i></span>
+                                <div class="invalid-feedback">Please enter your password.</div>
+                            </div>
+                        </div>
+
+                        <div id="loginError" class="alert alert-danger d-none" role="alert"></div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="loginBtn">Sign in</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+</main>
 
-    <!-- Libs JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script th:src="@{/assets/js/vendors/password.js}"></script>
-
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const form = event.target;
-
-            if (!form.checkValidity()) {
-                form.classList.add('was-validated');
-                return;
-            }
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const loginError = document.getElementById('loginError');
-
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Signing in...';
-            loginError.classList.add('d-none');
-
-            fetch('/api/v1/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 200) {
-                    localStorage.setItem('token', data.data.token);
-                    localStorage.setItem('username', data.data.user.username);
-                    localStorage.setItem('userRole', data.data.user.role);
-                    window.location.href = '/dashboard/index';
-                } else {
-                    loginError.textContent = data.message || 'Login failed';
-                    loginError.classList.remove('d-none');
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Sign in';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loginError.textContent = 'An error occurred. Please try again.';
-                loginError.classList.remove('d-none');
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Sign in';
-            });
-        });
-
-        // Clear error on input
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('input', () => {
-                document.getElementById('loginError').classList.add('d-none');
-            });
-        });
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/assets/js/vendors/password.js}"></script>
+<script th:src="@{/assets/js/core/api.js}"></script>
+<script th:src="@{/assets/js/pages/login.js}"></script>
 </body>
-
 </html>

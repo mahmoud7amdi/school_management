@@ -3,7 +3,32 @@
     "allow": [
       "Bash(xargs wc -l)",
       "Bash(./mvnw.cmd -q compile)",
-      "Bash(./mvnw.cmd -q -DskipTests package)"
+      "Bash(./mvnw.cmd -q -DskipTests package)",
+      "Bash(./mvnw -o -q compile -DskipTests)",
+      "Bash(./mvnw -o -q clean compile -DskipTests)",
+      "Bash(grep -rhо 'layout :: [a-zA-Z]*' templates)",
+      "Bash(./mvnw -o compile -DskipTests)",
+      "Bash(./mvnw -o test)",
+      "Bash(timeout 180 ./mvnw -o spring-boot:run -Dspring-boot.run.profiles=test -Dspring-boot.run.jvmArguments=\"-Dserver.port=8099\")",
+      "Bash(echo \"exit=$?\")",
+      "Read(//tmp/**)",
+      "Bash(mysql -u root --protocol=tcp -e \"SHOW COLUMNS FROM token_blacklist;\" school_test_db)",
+      "Bash(mysql -u root --protocol=tcp -e \"SHOW COLUMNS FROM token_blacklist;\" school_db)",
+      "Bash(mysql -u root --protocol=tcp -e \"SHOW DATABASES;\")",
+      "Bash(mysql -u root --protocol=tcp school_db -e \"ALTER TABLE token_blacklist DROP COLUMN token_hash;\")",
+      "Bash(mysql -u root --protocol=tcp school_db -e \"SHOW COLUMNS FROM token_blacklist;\")",
+      "Bash(echo \"compile=$?\")",
+      "Bash(timeout 200 ./mvnw -o spring-boot:run -Dspring-boot.run.jvmArguments=\"-Dspring.profiles.active=test -Dserver.port=8099 -Dspring.devtools.restart.enabled=false\")",
+      "Bash(mysql -u root --protocol=tcp school_db -e \"SHOW TABLES;\")",
+      "Bash(mysql -u root --protocol=tcp school_db -e \"SHOW COLUMNS FROM academic_years;\")",
+      "Bash(mysql -u root --protocol=tcp school_db -e \"SHOW COLUMNS FROM classrooms;\")",
+      "Bash(pkill -f 'spring-boot:run')",
+      "Bash(echo \"compile_exit=$?\")",
+      "Bash(mysql -u root --protocol=tcp -e \"DROP DATABASE IF EXISTS school_verify_db;\")",
+      "Bash(mysql -u root --protocol=tcp school_db -N -e \"SELECT CONCAT\\('users=',\\(SELECT COUNT\\(*\\) FROM users\\),' schools=',\\(SELECT COUNT\\(*\\) FROM schools\\),' tokens=',\\(SELECT COUNT\\(*\\) FROM token_blacklist\\)\\);\")",
+      "Bash(echo \"final_compile_exit=$?\")",
+      "Bash(grep -rn '\\\\$\\(\\\\|jQuery\\\\|ajaxSetup' templates/)",
+      "Bash(python -)"
     ]
   }
 }

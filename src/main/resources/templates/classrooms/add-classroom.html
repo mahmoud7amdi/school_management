@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Add Classroom')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/classrooms/all}" class="text-secondary">Classrooms</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Add</li>
+                    </ol>
+                </nav>
+                <h1>Add New Classroom</h1>
+            </div>
+            <a th:href="@{/dashboard/classrooms/all}" class="btn btn-light">
+                <i class="ti ti-arrow-left me-1"></i> Back to Classrooms
+            </a>
+        </div>
+
+        <div class="card form-card shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <form id="classroomForm" class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="name">Classroom name <span class="text-danger">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   placeholder="e.g. 1-A" maxlength="80" required autofocus />
+                            <div class="invalid-feedback" data-server-feedback>Please enter the classroom name.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="capacity">Capacity</label>
+                            <input type="number" id="capacity" name="capacity" class="form-control" min="1" max="500" />
+                            <div class="invalid-feedback" data-server-feedback>Must be between 1 and 500.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label" for="roomNumber">Room no.</label>
+                            <input type="text" id="roomNumber" name="roomNumber" class="form-control" maxlength="50" />
+                            <div class="invalid-feedback" data-server-feedback></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="gradeId">Grade <span class="text-danger">*</span></label>
+                            <select id="gradeId" name="gradeId" class="form-select" required></select>
+                            <div class="invalid-feedback" data-server-feedback>Please select a grade.</div>
+                            <div class="form-text">The school is taken from the grade.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="academicYearId">Academic year <span class="text-danger">*</span></label>
+                            <select id="academicYearId" name="academicYearId" class="form-select" required></select>
+                            <div class="invalid-feedback" data-server-feedback>Please select an academic year.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="classTeacherId">Class teacher</label>
+                            <select id="classTeacherId" name="classTeacherId" class="form-select"></select>
+                            <div class="invalid-feedback" data-server-feedback></div>
+                            <div class="form-text">Optional. Only teachers from the same school are listed.</div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary" id="saveBtn">
+                            <i class="ti ti-check me-1"></i> Save Classroom
+                        </button>
+                        <a th:href="@{/dashboard/classrooms/all}" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/classroom-form.js}"></script>
+
+</body>
+</html>

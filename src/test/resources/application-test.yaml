@@ -1,0 +1,31 @@
+# Test profile.
+#
+# Runs against a scratch MySQL schema rather than H2: H2 is not available in the
+# offline repository, and testing on the real engine also exercises the MySQL
+# dialect and the actual DDL Hibernate emits.
+#
+# Uses its own database (school_test_db) so it never touches development data,
+# and create-drop leaves nothing behind.
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/school_test_db?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+app:
+  jwt:
+    secret: TestOnlySecretKeyForHs256SigningThatIsAtLeast32CharactersLong
+    expiration: 1h
+  admin:
+    username: admin
+    password: admin123
+    email: admin@test.local
+    full-name: Test Administrator

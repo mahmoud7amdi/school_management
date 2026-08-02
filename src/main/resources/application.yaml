@@ -3,17 +3,25 @@ spring:
     name: school-management-api
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/school_db?createDatabaseIfNotExist=true
-    username: root
-    password:
+    url: jdbc:mysql://127.0.0.1:3306/school_db?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
 
   jpa:
+    # Views never touch lazy associations: entities are mapped to DTOs inside the
+    # transaction, so keep the session out of the view layer.
+    open-in-view: false
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 25
 
   thymeleaf:
     cache: false
@@ -22,5 +30,38 @@ spring:
     check-template-location: true
     mode: HTML
 
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+app:
+  jwt:
+    # Override in every real environment: JWT_SECRET must be >= 32 characters.
+    secret: ${JWT_SECRET:ChangeMeThisIsADevelopmentOnlySecretKeyForHs256SigningAtLeast32Chars}
+    expiration: 10h
+    issuer: school-management-api
+  admin:
+    # Bootstrap account, created once on first start.
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:admin123}
+    email: ${ADMIN_EMAIL:admin@smartedu.com}
+    full-name: ${ADMIN_FULL_NAME:System Administrator}
+  security:
+    # Purge expired blacklisted tokens nightly at 03:00.
+    token-cleanup-cron: "0 0 3 * * *"
+
 server:
   port: 8080
+  error:
+    whitelabel:
+      enabled: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+logging:
+  level:
+    com.smartedu: INFO

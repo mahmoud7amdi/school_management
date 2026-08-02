@@ -3,102 +3,132 @@
 <head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
 <body>
 
-<div>
-    <div th:replace="~{fragments/layout :: sidebar}"></div>
-    <div th:replace="~{fragments/layout :: mobileNav}"></div>
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
 
-    <div id="content" class="position-relative h-100">
-        <div th:replace="~{fragments/layout :: topbar}"></div>
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
 
-        <div class="custom-container">
-            <!-- Welcome -->
-            <div class="card mb-4 border-0 shadow-sm" style="background: linear-gradient(135deg, var(--ds-primary-bg-subtle), transparent);">
-                <div class="card-body p-4 p-lg-5 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
-                    <div>
-                        <h1 class="welcome-header mb-1 fs-3 fw-bold">👋 Hello,</h1>
-                        <p class="mb-0 text-secondary">Welcome back to your School Management dashboard.</p>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <a th:href="@{/dashboard/users/all}" class="btn btn-outline-primary">
-                            <i class="ti ti-users me-1"></i> Users
-                        </a>
-                        <a th:href="@{/dashboard/schools/all}" class="btn btn-primary nav-schools-item">
-                            <i class="ti ti-school me-1"></i> Schools
-                        </a>
-                    </div>
+    <div class="custom-container">
+        <!-- Welcome -->
+        <div class="card welcome-card mb-4 shadow-sm">
+            <div class="card-body p-4 p-lg-5 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <h1 class="welcome-header mb-1 fs-3 fw-bold">Hello,</h1>
+                    <p class="mb-0 text-secondary">
+                        Here is what is happening at <span class="fw-semibold" id="scopeLabel">your school</span>.
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a th:href="@{/dashboard/students/add}" class="btn btn-primary">
+                        <i class="ti ti-user-plus me-1"></i> Enroll Student
+                    </a>
+                    <a th:href="@{/dashboard/students/all}" class="btn btn-outline-primary">
+                        <i class="ti ti-school me-1"></i> Students
+                    </a>
                 </div>
             </div>
+        </div>
 
-            <!-- Stats -->
-            <div class="row g-4 mb-4">
-                <div class="col-md-6 col-xl-4 nav-schools-item">
-                    <div class="card stat-card h-100">
-                        <div class="card-body d-flex align-items-center gap-3">
-                            <span class="stat-icon bg-primary-subtle text-primary-emphasis"><i class="ti ti-school"></i></span>
-                            <div>
-                                <p class="text-secondary small mb-1">Total Schools</p>
-                                <h3 class="mb-0 fw-bold" id="statSchoolsCount">—</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-4">
-                    <div class="card stat-card h-100">
-                        <div class="card-body d-flex align-items-center gap-3">
-                            <span class="stat-icon bg-success-subtle text-success-emphasis"><i class="ti ti-users"></i></span>
-                            <div>
-                                <p class="text-secondary small mb-1">Total Users</p>
-                                <h3 class="mb-0 fw-bold" id="statUsersCount">—</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-12 col-xl-4">
-                    <div class="card stat-card h-100">
-                        <div class="card-body d-flex align-items-center gap-3">
-                            <span class="stat-icon bg-warning-subtle text-warning-emphasis"><i class="ti ti-shield-check"></i></span>
-                            <div>
-                                <p class="text-secondary small mb-1">Your Role</p>
-                                <h3 class="mb-0 fw-bold" id="statRole">—</h3>
-                            </div>
+        <!-- Stats -->
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3" data-requires-role="SUPER_ADMIN">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="stat-icon bg-primary-subtle text-primary-emphasis"><i class="ti ti-building-community"></i></span>
+                        <div>
+                            <p class="stat-label">Schools</p>
+                            <h3 class="stat-value" id="statSchools">&mdash;</h3>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Quick actions -->
-            <div class="row g-4">
-                <div class="col-lg-6 nav-schools-item">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title mb-3"><i class="ti ti-bolt text-primary me-1"></i> Manage Schools</h5>
-                            <p class="text-secondary">Create, view and update schools registered in the system.</p>
-                            <div class="d-flex gap-2">
-                                <a th:href="@{/dashboard/schools/all}" class="btn btn-sm btn-outline-primary">View All</a>
-                                <a th:href="@{/dashboard/schools/add}" class="btn btn-sm btn-primary">Add School</a>
-                            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="stat-icon bg-success-subtle text-success-emphasis"><i class="ti ti-school"></i></span>
+                        <div>
+                            <p class="stat-label">Students</p>
+                            <h3 class="stat-value" id="statStudents">&mdash;</h3>
+                            <span class="small text-secondary" id="statActiveStudents"></span>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title mb-3"><i class="ti ti-bolt text-success me-1"></i> Manage Users</h5>
-                            <p class="text-secondary">Add new users, assign roles, and manage account access.</p>
-                            <div class="d-flex gap-2">
-                                <a th:href="@{/dashboard/users/all}" class="btn btn-sm btn-outline-success">View All</a>
-                                <a th:href="@{/dashboard/users/add}" class="btn btn-sm btn-success">Add User</a>
-                            </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="stat-icon bg-info-subtle text-info-emphasis"><i class="ti ti-users"></i></span>
+                        <div>
+                            <p class="stat-label" id="peopleLabel">Users</p>
+                            <h3 class="stat-value" id="statUsers">&mdash;</h3>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="stat-icon bg-warning-subtle text-warning-emphasis"><i class="ti ti-door"></i></span>
+                        <div>
+                            <p class="stat-label">Classrooms</p>
+                            <h3 class="stat-value" id="statClassrooms">&mdash;</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Students by grade -->
+            <div class="col-lg-7">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Students by grade</h5>
+                        <a th:href="@{/dashboard/grades/all}" class="btn btn-sm btn-ghost-primary">Manage grades</a>
+                    </div>
+                    <div class="card-body" id="gradeBreakdown">
+                        <p class="text-secondary mb-0">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic snapshot -->
+            <div class="col-lg-5">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">Academic snapshot</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-secondary"><i class="ti ti-calendar-event me-2"></i>Current academic year</span>
+                            <span class="fw-semibold" id="statCurrentYear">&mdash;</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-secondary"><i class="ti ti-stairs-up me-2"></i>Grades</span>
+                            <span class="fw-semibold" id="statGrades">&mdash;</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-secondary"><i class="ti ti-book me-2"></i>Subjects</span>
+                            <span class="fw-semibold" id="statSubjects">&mdash;</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-secondary"><i class="ti ti-chalkboard me-2"></i>Teachers</span>
+                            <span class="fw-semibold" id="statTeachers">&mdash;</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="text-secondary"><i class="ti ti-calendar me-2"></i>Academic years</span>
+                            <span class="fw-semibold" id="statYears">&mdash;</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div th:replace="~{fragments/layout :: scripts}"></div>
-<script th:src="@{/assets/js/dashboard-home.js}"></script>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/dashboard-home.js}"></script>
 
 </body>
 </html>

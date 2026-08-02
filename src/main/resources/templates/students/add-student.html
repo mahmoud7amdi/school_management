@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Enroll Student')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/students/all}" class="text-secondary">Students</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" id="crumbAction">Enroll</li>
+                    </ol>
+                </nav>
+                <h1 id="pageTitle">Enroll Student</h1>
+                <p class="page-subtitle">Records marked with <span class="text-danger">*</span> are required.</p>
+            </div>
+            <a th:href="@{/dashboard/students/all}" class="btn btn-light">
+                <i class="ti ti-arrow-left me-1"></i> Back to Students
+            </a>
+        </div>
+
+        <div class="card form-card shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <form id="studentForm" class="needs-validation" novalidate>
+
+                    <!-- Personal -->
+                    <div class="form-section">
+                        <p class="form-section-title">Personal details</p>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label" for="admissionNumber">Admission number <span class="text-danger">*</span></label>
+                                <input type="text" id="admissionNumber" name="admissionNumber" class="form-control" maxlength="40" required />
+                                <div class="invalid-feedback" data-server-feedback>Please enter the admission number.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="firstName">First name <span class="text-danger">*</span></label>
+                                <input type="text" id="firstName" name="firstName" class="form-control" maxlength="60" required />
+                                <div class="invalid-feedback" data-server-feedback>Please enter the first name.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="lastName">Last name <span class="text-danger">*</span></label>
+                                <input type="text" id="lastName" name="lastName" class="form-control" maxlength="60" required />
+                                <div class="invalid-feedback" data-server-feedback>Please enter the last name.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="gender">Gender <span class="text-danger">*</span></label>
+                                <select id="gender" name="gender" class="form-select" required>
+                                    <option value="">Select gender</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                </select>
+                                <div class="invalid-feedback" data-server-feedback>Please select a gender.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="dateOfBirth">Date of birth <span class="text-danger">*</span></label>
+                                <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" required />
+                                <div class="invalid-feedback" data-server-feedback>Please enter the date of birth.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="phoneNumber">Phone</label>
+                                <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" maxlength="30" />
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="email">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" maxlength="150" />
+                                <div class="invalid-feedback" data-server-feedback>Please enter a valid email.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="address">Address</label>
+                                <input type="text" id="address" name="address" class="form-control" maxlength="255" />
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enrolment -->
+                    <div class="form-section">
+                        <p class="form-section-title">Enrolment</p>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label" for="gradeId">Grade <span class="text-danger">*</span></label>
+                                <select id="gradeId" name="gradeId" class="form-select" required>
+                                    <option value="">Select grade</option>
+                                </select>
+                                <div class="invalid-feedback" data-server-feedback>Please select a grade.</div>
+                                <div class="form-text">The school is taken from the grade.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="classroomId">Classroom</label>
+                                <select id="classroomId" name="classroomId" class="form-select" disabled>
+                                    <option value="">Select a grade first</option>
+                                </select>
+                                <div class="invalid-feedback" data-server-feedback></div>
+                                <div class="form-text">Optional — can be assigned later.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="status">Status</label>
+                                <select id="status" name="status" class="form-select">
+                                    <option value="ACTIVE">Active</option>
+                                    <option value="INACTIVE">Inactive</option>
+                                    <option value="GRADUATED">Graduated</option>
+                                    <option value="TRANSFERRED">Transferred</option>
+                                    <option value="SUSPENDED">Suspended</option>
+                                </select>
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="enrollmentDate">Enrollment date <span class="text-danger">*</span></label>
+                                <input type="date" id="enrollmentDate" name="enrollmentDate" class="form-control" required />
+                                <div class="invalid-feedback" data-server-feedback>Please enter the enrollment date.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guardian -->
+                    <div class="form-section">
+                        <p class="form-section-title">Guardian</p>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label" for="guardianName">Guardian name</label>
+                                <input type="text" id="guardianName" name="guardianName" class="form-control" maxlength="120" />
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="guardianPhone">Guardian phone</label>
+                                <input type="tel" id="guardianPhone" name="guardianPhone" class="form-control" maxlength="30" />
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="guardianEmail">Guardian email</label>
+                                <input type="email" id="guardianEmail" name="guardianEmail" class="form-control" maxlength="150" />
+                                <div class="invalid-feedback" data-server-feedback>Please enter a valid email.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary" id="saveBtn">
+                            <i class="ti ti-check me-1"></i> <span id="saveLabel">Enroll Student</span>
+                        </button>
+                        <a th:href="@{/dashboard/students/all}" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/student-form.js}"></script>
+
+</body>
+</html>

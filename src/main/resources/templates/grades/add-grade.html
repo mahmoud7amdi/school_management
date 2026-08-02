@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Add Grade')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/grades/all}" class="text-secondary">Grades</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Add</li>
+                    </ol>
+                </nav>
+                <h1>Add New Grade</h1>
+            </div>
+            <a th:href="@{/dashboard/grades/all}" class="btn btn-light">
+                <i class="ti ti-arrow-left me-1"></i> Back to Grades
+            </a>
+        </div>
+
+        <div class="card form-card shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <form id="gradeForm" class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-12 d-none" id="schoolField">
+                            <label class="form-label" for="schoolId">School <span class="text-danger">*</span></label>
+                            <select id="schoolId" name="schoolId" class="form-select"></select>
+                            <div class="invalid-feedback" data-server-feedback>Please select a school.</div>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label" for="name">Grade name <span class="text-danger">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control"
+                                   placeholder="e.g. Grade 1" maxlength="80" required autofocus />
+                            <div class="invalid-feedback" data-server-feedback>Please enter the grade name.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="levelOrder">Level</label>
+                            <input type="number" id="levelOrder" name="levelOrder" class="form-control" min="1" max="30" />
+                            <div class="invalid-feedback" data-server-feedback>Level must be between 1 and 30.</div>
+                            <div class="form-text">Controls sort order.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="description">Description</label>
+                            <input type="text" id="description" name="description" class="form-control" maxlength="255" />
+                            <div class="invalid-feedback" data-server-feedback></div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary" id="saveBtn">
+                            <i class="ti ti-check me-1"></i> Save Grade
+                        </button>
+                        <a th:href="@{/dashboard/grades/all}" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/grade-form.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('All Students')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Students</li>
+                    </ol>
+                </nav>
+                <h1>Students</h1>
+                <p class="page-subtitle" id="resultSummary">Loading students...</p>
+            </div>
+            <a th:href="@{/dashboard/students/add}" class="btn btn-primary">
+                <i class="ti ti-user-plus me-1"></i> Enroll Student
+            </a>
+        </div>
+
+        <!-- Filters. Each change refetches server-side, so paging stays correct. -->
+        <div class="table-toolbar">
+            <div class="toolbar-search">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent"><i class="ti ti-search"></i></span>
+                    <input type="search" id="studentSearch" class="form-control"
+                           placeholder="Search name, admission no. or email"
+                           aria-label="Search students" />
+                </div>
+            </div>
+            <div class="toolbar-filter">
+                <select id="filterStatus" class="form-select" aria-label="Filter by status">
+                    <option value="">All statuses</option>
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                    <option value="GRADUATED">Graduated</option>
+                    <option value="TRANSFERRED">Transferred</option>
+                    <option value="SUSPENDED">Suspended</option>
+                </select>
+            </div>
+            <div class="toolbar-filter">
+                <select id="filterGrade" class="form-select" aria-label="Filter by grade">
+                    <option value="">All grades</option>
+                </select>
+            </div>
+            <div class="toolbar-filter">
+                <select id="filterClassroom" class="form-select" aria-label="Filter by classroom">
+                    <option value="">All classrooms</option>
+                </select>
+            </div>
+            <button type="button" id="resetFilters" class="btn btn-light" title="Clear filters">
+                <i class="ti ti-filter-off"></i>
+            </button>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table app-table mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th>Admission&nbsp;No.</th>
+                            <th>Student</th>
+                            <th>Grade</th>
+                            <th>Classroom</th>
+                            <th>Guardian</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                        <tr><td colspan="7" class="table-state"><i class="ti ti-loader-2"></i>Loading students...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer" id="tableFooter" hidden>
+                    <span id="pageInfo"></span>
+                    <nav aria-label="Students pagination">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item" id="prevPageItem">
+                                <button class="page-link" type="button" id="prevPage">Previous</button>
+                            </li>
+                            <li class="page-item" id="nextPageItem">
+                                <button class="page-link" type="button" id="nextPage">Next</button>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Student detail drawer -->
+<div class="modal fade" id="studentDetailModal" tabindex="-1" aria-labelledby="studentDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="studentDetailLabel">Student details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="studentDetailBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="detailEditLink">
+                    <i class="ti ti-pencil me-1"></i> Edit
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/students-list.js}"></script>
+
+</body>
+</html>
