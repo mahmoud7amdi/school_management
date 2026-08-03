@@ -66,11 +66,11 @@
             </ul>
         </li>
 
-        <li class="nav-item">
+        <li class="nav-item" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
             <div class="nav-heading">People</div>
             <hr class="mx-5 nav-line mb-1" />
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="nav-icon"><i class="ti ti-users fs-4"></i></span>
                 <span class="text">Users</span>
@@ -80,7 +80,17 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/users/add}">Add User</a></li>
             </ul>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="nav-icon"><i class="ti ti-chalkboard fs-4"></i></span>
+                <span class="text">Teachers</span>
+            </a>
+            <ul class="dropdown-menu flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/teachers/all}">All Teachers</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/teachers/add}">Add Teacher</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="nav-icon"><i class="ti ti-school fs-4"></i></span>
                 <span class="text">Students</span>
@@ -90,12 +100,118 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/students/add}">Enroll Student</a></li>
             </ul>
         </li>
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="nav-icon"><i class="ti ti-users-group fs-4"></i></span>
+                <span class="text">Parents</span>
+            </a>
+            <ul class="dropdown-menu flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/parents/all}">All Parents</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/parents/add}">Add Parent</a></li>
+            </ul>
+        </li>
 
-        <li class="nav-item">
+        <!-- ============ Teacher portal ============ -->
+        <li class="nav-item" data-requires-role="TEACHER">
+            <div class="nav-heading">My Teaching</div>
+            <hr class="mx-5 nav-line mb-1" />
+        </li>
+        <li class="nav-item" data-requires-role="TEACHER">
+            <a class="nav-link" th:href="@{/dashboard/portal/classes}">
+                <span class="nav-icon"><i class="ti ti-door fs-4"></i></span>
+                <span class="text">My Classes</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="TEACHER">
+            <a class="nav-link" th:href="@{/dashboard/attendance/register}">
+                <span class="nav-icon"><i class="ti ti-calendar-check fs-4"></i></span>
+                <span class="text">Daily Register</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="TEACHER">
+            <a class="nav-link" th:href="@{/dashboard/exams/results}">
+                <span class="nav-icon"><i class="ti ti-file-certificate fs-4"></i></span>
+                <span class="text">Enter Marks</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="TEACHER">
+            <a class="nav-link" th:href="@{/dashboard/portal/absence-notes}">
+                <span class="nav-icon"><i class="ti ti-note fs-4"></i></span>
+                <span class="text">Absence Notes</span>
+            </a>
+        </li>
+
+        <!-- ============ Student portal ============ -->
+        <li class="nav-item" data-requires-role="STUDENT">
+            <div class="nav-heading">My School</div>
+            <hr class="mx-5 nav-line mb-1" />
+        </li>
+        <li class="nav-item" data-requires-role="STUDENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/my-attendance}">
+                <span class="nav-icon"><i class="ti ti-calendar-check fs-4"></i></span>
+                <span class="text">My Attendance</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="STUDENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/my-results}">
+                <span class="nav-icon"><i class="ti ti-file-certificate fs-4"></i></span>
+                <span class="text">My Results</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="STUDENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/my-fees}">
+                <span class="nav-icon"><i class="ti ti-cash fs-4"></i></span>
+                <span class="text">My Fees</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="STUDENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/absence-notes}">
+                <span class="nav-icon"><i class="ti ti-note fs-4"></i></span>
+                <span class="text">Absence Notes</span>
+            </a>
+        </li>
+
+        <!-- ============ Parent portal ============ -->
+        <li class="nav-item" data-requires-role="PARENT">
+            <div class="nav-heading">My Family</div>
+            <hr class="mx-5 nav-line mb-1" />
+        </li>
+        <li class="nav-item" data-requires-role="PARENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/children}">
+                <span class="nav-icon"><i class="ti ti-users fs-4"></i></span>
+                <span class="text">My Children</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="PARENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/my-attendance}">
+                <span class="nav-icon"><i class="ti ti-calendar-check fs-4"></i></span>
+                <span class="text">Attendance</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="PARENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/my-results}">
+                <span class="nav-icon"><i class="ti ti-file-certificate fs-4"></i></span>
+                <span class="text">Results</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="PARENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/my-fees}">
+                <span class="nav-icon"><i class="ti ti-cash fs-4"></i></span>
+                <span class="text">Fees</span>
+            </a>
+        </li>
+        <li class="nav-item" data-requires-role="PARENT">
+            <a class="nav-link" th:href="@{/dashboard/portal/absence-notes}">
+                <span class="nav-icon"><i class="ti ti-note fs-4"></i></span>
+                <span class="text">Absence Notes</span>
+            </a>
+        </li>
+
+        <li class="nav-item" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
             <div class="nav-heading">Academics</div>
             <hr class="mx-5 nav-line mb-1" />
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="nav-icon"><i class="ti ti-calendar-event fs-4"></i></span>
                 <span class="text">Academic Years</span>
@@ -105,7 +221,7 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/academic-years/add}">Add Year</a></li>
             </ul>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="nav-icon"><i class="ti ti-stairs-up fs-4"></i></span>
                 <span class="text">Grades</span>
@@ -115,7 +231,7 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/grades/add}">Add Grade</a></li>
             </ul>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="nav-icon"><i class="ti ti-book fs-4"></i></span>
                 <span class="text">Subjects</span>
@@ -125,7 +241,7 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/subjects/add}">Add Subject</a></li>
             </ul>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="nav-icon"><i class="ti ti-door fs-4"></i></span>
                 <span class="text">Classrooms</span>
@@ -133,6 +249,64 @@
             <ul class="dropdown-menu flex-column">
                 <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/classrooms/all}">All Classrooms</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/classrooms/add}">Add Classroom</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="nav-icon"><i class="ti ti-layout-grid fs-4"></i></span>
+                <span class="text">Sections</span>
+            </a>
+            <ul class="dropdown-menu flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/sections/all}">All Sections</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/sections/add}">Add Section</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+            <div class="nav-heading">Records</div>
+            <hr class="mx-5 nav-line mb-1" />
+        </li>
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="nav-icon"><i class="ti ti-clipboard-list fs-4"></i></span>
+                <span class="text">Enrollments</span>
+            </a>
+            <ul class="dropdown-menu flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/enrollments/all}">All Enrollments</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/enrollments/add}">New Enrollment</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="nav-icon"><i class="ti ti-calendar-check fs-4"></i></span>
+                <span class="text">Attendance</span>
+            </a>
+            <ul class="dropdown-menu flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/attendance/register}">Daily Register</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/attendance/all}">All Records</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="nav-icon"><i class="ti ti-file-certificate fs-4"></i></span>
+                <span class="text">Exams</span>
+            </a>
+            <ul class="dropdown-menu flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/exams/all}">All Exams</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/exams/add}">Add Exam</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/exams/results}">Enter Marks</a></li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="nav-icon"><i class="ti ti-cash fs-4"></i></span>
+                <span class="text">Fees</span>
+            </a>
+            <ul class="dropdown-menu flex-column">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/fees/structures}">Fee Items</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/fees/structures/add}">Add Fee Item</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/fees/payments}">Payments</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/fees/payments/add}">Record Payment</a></li>
             </ul>
         </li>
     </ul>
@@ -213,17 +387,50 @@
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/schools/all}"><i class="ti ti-building-community me-2"></i> All Schools</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/schools/add}"><i class="ti ti-plus me-2"></i> Add School</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
                 <div class="nav-heading px-4 pt-3 small text-uppercase fw-bold text-secondary">People</div>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/users/all}"><i class="ti ti-users me-2"></i> Users</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/teachers/all}"><i class="ti ti-chalkboard me-2"></i> Teachers</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/students/all}"><i class="ti ti-school me-2"></i> Students</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/parents/all}"><i class="ti ti-users-group me-2"></i> Parents</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" data-requires-role="TEACHER">
+                <div class="nav-heading px-4 pt-3 small text-uppercase fw-bold text-secondary">My Teaching</div>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/classes}"><i class="ti ti-door me-2"></i> My Classes</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/attendance/register}"><i class="ti ti-calendar-check me-2"></i> Daily Register</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/exams/results}"><i class="ti ti-file-certificate me-2"></i> Enter Marks</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/absence-notes}"><i class="ti ti-note me-2"></i> Absence Notes</a>
+            </li>
+            <li class="nav-item" data-requires-role="STUDENT">
+                <div class="nav-heading px-4 pt-3 small text-uppercase fw-bold text-secondary">My School</div>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/my-attendance}"><i class="ti ti-calendar-check me-2"></i> My Attendance</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/my-results}"><i class="ti ti-file-certificate me-2"></i> My Results</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/my-fees}"><i class="ti ti-cash me-2"></i> My Fees</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/absence-notes}"><i class="ti ti-note me-2"></i> Absence Notes</a>
+            </li>
+            <li class="nav-item" data-requires-role="PARENT">
+                <div class="nav-heading px-4 pt-3 small text-uppercase fw-bold text-secondary">My Family</div>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/children}"><i class="ti ti-users me-2"></i> My Children</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/my-attendance}"><i class="ti ti-calendar-check me-2"></i> Attendance</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/my-results}"><i class="ti ti-file-certificate me-2"></i> Results</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/my-fees}"><i class="ti ti-cash me-2"></i> Fees</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/portal/absence-notes}"><i class="ti ti-note me-2"></i> Absence Notes</a>
+            </li>
+            <li class="nav-item" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
                 <div class="nav-heading px-4 pt-3 small text-uppercase fw-bold text-secondary">Academics</div>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/academic-years/all}"><i class="ti ti-calendar-event me-2"></i> Academic Years</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/grades/all}"><i class="ti ti-stairs-up me-2"></i> Grades</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/subjects/all}"><i class="ti ti-book me-2"></i> Subjects</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/classrooms/all}"><i class="ti ti-door me-2"></i> Classrooms</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/sections/all}"><i class="ti ti-layout-grid me-2"></i> Sections</a>
+            </li>
+            <li class="nav-item" data-requires-role="SUPER_ADMIN,SCHOOL_ADMIN">
+                <div class="nav-heading px-4 pt-3 small text-uppercase fw-bold text-secondary">Records</div>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/enrollments/all}"><i class="ti ti-clipboard-list me-2"></i> Enrollments</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/attendance/register}"><i class="ti ti-calendar-check me-2"></i> Daily Register</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/exams/all}"><i class="ti ti-file-certificate me-2"></i> Exams</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/fees/structures}"><i class="ti ti-cash me-2"></i> Fee Items</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/fees/payments}"><i class="ti ti-receipt me-2"></i> Payments</a>
             </li>
             <li class="nav-item border-top mt-3 pt-3">
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/users/profile}"><i class="ti ti-user-circle me-2"></i> My Profile</a>

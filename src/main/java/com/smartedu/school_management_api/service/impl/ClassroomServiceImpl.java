@@ -5,6 +5,7 @@ import com.smartedu.school_management_api.dto.classroom.ClassroomResponse;
 import com.smartedu.school_management_api.entity.AcademicYear;
 import com.smartedu.school_management_api.entity.Classroom;
 import com.smartedu.school_management_api.entity.Grade;
+import com.smartedu.school_management_api.entity.Section;
 import com.smartedu.school_management_api.entity.User;
 import com.smartedu.school_management_api.entity.UserRole;
 import com.smartedu.school_management_api.exception.BadRequestException;
@@ -14,6 +15,7 @@ import com.smartedu.school_management_api.mapper.ClassroomMapper;
 import com.smartedu.school_management_api.repository.AcademicYearRepository;
 import com.smartedu.school_management_api.repository.ClassroomRepository;
 import com.smartedu.school_management_api.repository.GradeRepository;
+import com.smartedu.school_management_api.repository.SectionRepository;
 import com.smartedu.school_management_api.repository.StudentRepository;
 import com.smartedu.school_management_api.repository.UserRepository;
 import com.smartedu.school_management_api.service.ClassroomService;
@@ -32,6 +34,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final GradeRepository gradeRepository;
     private final AcademicYearRepository academicYearRepository;
+    private final SectionRepository sectionRepository;
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
     private final SchoolAccessService access;
@@ -77,6 +80,7 @@ public class ClassroomServiceImpl implements ClassroomService {
                 .roomNumber(trimToNull(request.roomNumber()))
                 .grade(grade)
                 .academicYear(year)
+                .section(resolveSection(request.sectionId(), grade))
                 .classTeacher(resolveTeacher(request.classTeacherId(), grade.getSchool().getId()))
                 .school(grade.getSchool())
                 .build();
@@ -109,6 +113,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         classroom.setRoomNumber(trimToNull(request.roomNumber()));
         classroom.setGrade(grade);
         classroom.setAcademicYear(year);
+        classroom.setSection(resolveSection(request.sectionId(), grade));
         classroom.setClassTeacher(resolveTeacher(request.classTeacherId(), grade.getSchool().getId()));
         classroom.setSchool(grade.getSchool());
 
@@ -156,6 +161,21 @@ public class ClassroomServiceImpl implements ClassroomService {
         if (!grade.getSchool().getId().equals(year.getSchool().getId())) {
             throw new BadRequestException("The grade and academic year must belong to the same school");
         }
+    }
+
+    /** The section must sit under the same grade, which also pins it to the same school. */
+    private Section resolveSection(Long sectionId, Grade grade) {
+        if (sectionId == null) {
+            return null;
+        }
+        Section section = sectionRepository.findWithRelationsById(sectionId)
+                .orElseThrow(() -> NotFoundException.of("Section", sectionId));
+        access.requireSchoolAccess(section.getSchool().getId());
+
+        if (!section.getGrade().getId().equals(grade.getId())) {
+            throw new BadRequestException("The selected section belongs to a different grade");
+        }
+        return section;
     }
 
     private User resolveTeacher(UUID teacherId, Long schoolId) {

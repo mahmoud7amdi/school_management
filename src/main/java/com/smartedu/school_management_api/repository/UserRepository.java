@@ -46,6 +46,31 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             """)
     List<User> findSchoolMembers(@Param("schoolId") Long schoolId);
 
+    /**
+     * Every account, optionally narrowed by school or role — the super admin's view.
+     * A null parameter means "no filter" on that column.
+     */
+    @EntityGraph(attributePaths = "school")
+    @Query("""
+            select u from User u
+            where (:schoolId is null or u.school.id = :schoolId)
+              and (:role is null or u.role = :role)
+            order by u.fullName asc
+            """)
+    List<User> search(@Param("schoolId") Long schoolId, @Param("role") UserRole role);
+
+    /** As {@link #findSchoolMembers} but with the same optional role filter. */
+    @EntityGraph(attributePaths = "school")
+    @Query("""
+            select u from User u
+            where u.school.id = :schoolId
+              and u.role not in (com.smartedu.school_management_api.entity.UserRole.SUPER_ADMIN,
+                                 com.smartedu.school_management_api.entity.UserRole.SCHOOL_ADMIN)
+              and (:role is null or u.role = :role)
+            order by u.fullName asc
+            """)
+    List<User> searchSchoolMembers(@Param("schoolId") Long schoolId, @Param("role") UserRole role);
+
     @EntityGraph(attributePaths = "school")
     List<User> findBySchoolIdAndRoleOrderByFullNameAsc(Long schoolId, UserRole role);
 

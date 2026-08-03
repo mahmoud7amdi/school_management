@@ -28,7 +28,18 @@
       "Bash(mysql -u root --protocol=tcp school_db -N -e \"SELECT CONCAT\\('users=',\\(SELECT COUNT\\(*\\) FROM users\\),' schools=',\\(SELECT COUNT\\(*\\) FROM schools\\),' tokens=',\\(SELECT COUNT\\(*\\) FROM token_blacklist\\)\\);\")",
       "Bash(echo \"final_compile_exit=$?\")",
       "Bash(grep -rn '\\\\$\\(\\\\|jQuery\\\\|ajaxSetup' templates/)",
-      "Bash(python -)"
+      "Bash(python -)",
+      "Bash(./mvnw -q -o compile -DskipTests)",
+      "PowerShell(java *)",
+      "WebSearch",
+      "Bash(read p *)",
+      "Bash([ -f \"../static/$p\" ])",
+      "Read(//e/Spring/school-management-api/java/com/smartedu/school_management_api/controller/**)",
+      "Bash(cp src/test/resources/application-test.yaml /tmp/app-test-backup.yaml)",
+      "Bash(sed -i 's/ddl-auto: create-drop/ddl-auto: update/' src/test/resources/application-test.yaml)",
+      "Bash(cp /tmp/app-test-backup.yaml src/test/resources/application-test.yaml)",
+      "Bash(rm -f DbCheck.java DbCheck.class)",
+      "Bash(node --check src/main/resources/static/assets/js/pages/attendance-register.js)"
     ]
   }
 }

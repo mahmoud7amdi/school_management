@@ -45,6 +45,7 @@
                         <tr>
                             <th>Classroom</th>
                             <th>Grade</th>
+                            <th>Section</th>
                             <th>Academic year</th>
                             <th>Class teacher</th>
                             <th>Occupancy</th>
@@ -53,7 +54,7 @@
                         </tr>
                         </thead>
                         <tbody id="tableBody">
-                        <tr><td colspan="7" class="table-state"><i class="ti ti-loader-2"></i>Loading classrooms...</td></tr>
+                        <tr><td colspan="8" class="table-state"><i class="ti ti-loader-2"></i>Loading classrooms...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -97,7 +98,12 @@
                             <select id="academicYearId" name="academicYearId" class="form-select" required></select>
                             <div class="invalid-feedback" data-server-feedback>Please select an academic year.</div>
                         </div>
-                        <div class="col-12">
+                        <div class="col-md-6">
+                            <label class="form-label" for="sectionId">Section</label>
+                            <select id="sectionId" name="sectionId" class="form-select"></select>
+                            <div class="invalid-feedback" data-server-feedback></div>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label" for="classTeacherId">Class teacher</label>
                             <select id="classTeacherId" name="classTeacherId" class="form-select"></select>
                             <div class="invalid-feedback" data-server-feedback></div>
@@ -109,6 +115,59 @@
                     <button type="submit" class="btn btn-primary" id="updateBtn">Save Changes</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!--
+  Teaching staff for one class. These assignments are what let a teacher see the class in
+  their portal, so they are managed here rather than on a separate page.
+-->
+<div class="modal fade" id="staffModal" tabindex="-1" aria-labelledby="staffLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="staffLabel">Teaching staff</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-secondary">
+                    A teacher assigned here can take this class's register and enter its marks.
+                    Leave the subject empty for a whole-class (homeroom) assignment.
+                </p>
+
+                <div class="row g-2 align-items-end mb-3">
+                    <div class="col-md-5">
+                        <label class="form-label small" for="assignTeacherId">Teacher</label>
+                        <select id="assignTeacherId" class="form-select form-select-sm"></select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label small" for="assignSubjectId">Subject</label>
+                        <select id="assignSubjectId" class="form-select form-select-sm"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-sm btn-primary w-100" id="assignBtn">
+                            <i class="ti ti-plus me-1"></i> Add
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table app-table mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th>Teacher</th>
+                            <th>Subject</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="staffBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,6 +32,18 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     @EntityGraph(attributePaths = {"school", "grade", "classroom"})
     List<Student> findByGradeIdOrderByLastNameAscFirstNameAsc(Long gradeId);
+
+    /** The student-portal lookup: resolves the enrolment record behind a login. */
+    @EntityGraph(attributePaths = {"school", "grade", "classroom", "userAccount"})
+    Optional<Student> findByUserAccountId(UUID userAccountId);
+
+    /** Rosters for a teacher's classes, in one query rather than one per class. */
+    @EntityGraph(attributePaths = {"school", "grade", "classroom"})
+    List<Student> findByClassroomIdInOrderByLastNameAscFirstNameAsc(Collection<Long> classroomIds);
+
+    /** Just the ids, for scope checks that do not need the rows. */
+    @Query("select s.id from Student s where s.classroom.id in :classroomIds")
+    List<Long> findIdsByClassroomIdIn(@Param("classroomIds") Collection<Long> classroomIds);
 
     boolean existsBySchoolIdAndAdmissionNumberIgnoreCase(Long schoolId, String admissionNumber);
 

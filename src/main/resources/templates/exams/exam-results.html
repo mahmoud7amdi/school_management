@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Enter Marks')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/exams/all}" class="text-secondary">Exams</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Marks</li>
+                    </ol>
+                </nav>
+                <h1>Enter Marks</h1>
+                <p class="page-subtitle">Pick an exam, enter each student's score, then save the sheet.</p>
+            </div>
+            <a th:href="@{/dashboard/exams/all}" class="btn btn-light">
+                <i class="ti ti-arrow-left me-1"></i> Back to Exams
+            </a>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <form id="marksControls" class="row g-3 align-items-end">
+                    <div class="col-md-8">
+                        <label class="form-label" for="examId">Exam <span class="text-danger">*</span></label>
+                        <select id="examId" name="examId" class="form-select" required></select>
+                        <div class="invalid-feedback">Please select an exam.</div>
+                    </div>
+                    <div class="col-md-4 d-grid">
+                        <button type="submit" class="btn btn-primary" id="loadBtn">
+                            <i class="ti ti-refresh me-1"></i> Load Marks Sheet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3" id="statsRow" hidden>
+            <div class="col-6 col-lg-3">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="text-secondary small">Students</div>
+                        <div class="fs-3 fw-bold" id="statTotal">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="text-secondary small">Marked</div>
+                        <div class="fs-3 fw-bold" id="statMarked">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="text-secondary small">Passed</div>
+                        <div class="fs-3 fw-bold text-success" id="statPassed">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card stat-card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="text-secondary small">Average</div>
+                        <div class="fs-3 fw-bold" id="statAverage">&mdash;</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-transparent d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="mb-0">Marks sheet</h5>
+                    <div class="small text-secondary" id="marksMeta">Choose an exam to begin.</div>
+                </div>
+                <button type="button" class="btn btn-primary" id="saveMarksBtn" disabled>
+                    <i class="ti ti-device-floppy me-1"></i> Save Marks
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table app-table mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Admission</th>
+                            <th style="width:140px">Marks</th>
+                            <th style="width:90px">Absent</th>
+                            <th>Grade</th>
+                            <th>Remarks</th>
+                        </tr>
+                        </thead>
+                        <tbody id="marksBody">
+                        <tr><td colspan="6" class="table-state"><i class="ti ti-list-numbers"></i>No marks sheet loaded.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/exam-results.js}"></script>
+
+</body>
+</html>

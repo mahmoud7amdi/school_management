@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Classes')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Classes</li>
+                    </ol>
+                </nav>
+                <h1>My Classes</h1>
+                <p class="page-subtitle" id="resultSummary">Loading...</p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table app-table mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Grade</th>
+                            <th>Section</th>
+                            <th>My subjects</th>
+                            <th>Room</th>
+                            <th>Students</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        <tr><td colspan="7" class="table-state"><i class="ti ti-loader-2"></i>Loading classes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Roster, loaded on demand for one class -->
+<div class="modal fade" id="rosterModal" tabindex="-1" aria-labelledby="rosterLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="rosterLabel">Class roster</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive">
+                    <table class="table app-table mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Admission no.</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="rosterBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/portal-teacher-classes.js}"></script>
+
+</body>
+</html>

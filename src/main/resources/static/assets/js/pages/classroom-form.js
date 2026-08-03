@@ -2,6 +2,20 @@
 (function () {
     'use strict';
 
+    // Sections belong to a grade, so the picker is refiltered whenever the grade
+    // changes rather than listing every section in the school.
+    let allSections = [];
+
+    function fillSectionsForGrade() {
+        const gradeId = document.getElementById('gradeId').value;
+        const matching = allSections.filter((section) =>
+            section.grade && String(section.grade.id) === String(gradeId));
+        UI.fillSelect(document.getElementById('sectionId'), matching, {
+            placeholder: 'No section',
+            label: (section) => section.name
+        });
+    }
+
     UI.bindForm(document.getElementById('classroomForm'), {
         submitButton: document.getElementById('saveBtn'),
         onSubmit: () => Api.post('/api/v1/classrooms', {
@@ -10,7 +24,8 @@
             roomNumber: document.getElementById('roomNumber').value.trim() || null,
             gradeId: document.getElementById('gradeId').value,
             academicYearId: document.getElementById('academicYearId').value,
-            classTeacherId: document.getElementById('classTeacherId').value || null
+            classTeacherId: document.getElementById('classTeacherId').value || null,
+            sectionId: document.getElementById('sectionId').value || null
         }),
         onSuccess: function () {
             UI.toast('Classroom added', 'success');
@@ -23,11 +38,13 @@
     Shell.requireManager()
         .then(async function () {
             const showSchool = Shell.isSuperAdmin();
-            const [grades, years, teachers] = await Promise.all([
+            const [grades, years, teachers, sections] = await Promise.all([
                 Api.get('/api/v1/grades'),
                 Api.get('/api/v1/academic-years'),
-                Api.get('/api/v1/users/teachers')
+                Api.get('/api/v1/users/teachers'),
+                Api.get('/api/v1/sections')
             ]);
+            allSections = sections;
 
             UI.fillSelect(document.getElementById('gradeId'), grades, {
                 placeholder: 'Select grade',
@@ -45,6 +62,9 @@
                 placeholder: 'No class teacher',
                 label: (teacher) => teacher.fullName
             });
+
+            document.getElementById('gradeId').addEventListener('change', fillSectionsForGrade);
+            fillSectionsForGrade();
 
             if (!grades.length || !years.length) {
                 UI.toast('Add a grade and an academic year before creating classrooms.', 'warning');

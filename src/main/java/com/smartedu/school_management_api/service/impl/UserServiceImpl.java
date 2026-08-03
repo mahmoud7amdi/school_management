@@ -17,7 +17,9 @@ import com.smartedu.school_management_api.exception.DuplicateResourceException;
 import com.smartedu.school_management_api.exception.NotFoundException;
 import com.smartedu.school_management_api.mapper.UserMapper;
 import com.smartedu.school_management_api.repository.SchoolRepository;
+import com.smartedu.school_management_api.repository.ParentRepository;
 import com.smartedu.school_management_api.repository.StudentRepository;
+import com.smartedu.school_management_api.repository.TeacherRepository;
 import com.smartedu.school_management_api.repository.TokenBlacklistRepository;
 import com.smartedu.school_management_api.repository.UserRepository;
 import com.smartedu.school_management_api.service.CustomUserDetailsService;
@@ -59,6 +61,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final SchoolRepository schoolRepository;
     private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
+    private final ParentRepository parentRepository;
     private final TokenBlacklistRepository tokenBlacklistRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -180,11 +184,14 @@ public class UserServiceImpl implements UserService {
     /** Applies the role-creation matrix and returns the school the new user belongs to. */
     private School resolveSchoolForCreate(User currentUser, UserRole targetRole, Long requestedSchoolId) {
         if (currentUser.getRole() == UserRole.SUPER_ADMIN) {
-            if (targetRole != UserRole.SCHOOL_ADMIN) {
-                throw new AccessDeniedAppException("A super admin may only create School Admin accounts");
+            // A super admin may now provision any role directly, not just School Admins,
+            // so it can stand in for a school with no working admin of its own.
+            if (targetRole == UserRole.SUPER_ADMIN) {
+                // A super admin has no school by design; every other role needs one.
+                return null;
             }
             if (requestedSchoolId == null) {
-                throw new BadRequestException("A school must be selected for a School Admin");
+                throw new BadRequestException("A school must be selected for a " + targetRole.getLabel());
             }
             return schoolRepository.findById(requestedSchoolId)
                     .orElseThrow(() -> NotFoundException.of("School", requestedSchoolId));
@@ -209,17 +216,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponse> getAllUsers(Long schoolId, UserRole role) {
         User currentUser = access.currentUser();
 
         List<User> users = switch (currentUser.getRole()) {
-            case SUPER_ADMIN -> userRepository.findByRoleOrderByFullNameAsc(UserRole.SCHOOL_ADMIN);
+            // Every account, so the Users page can act as the intervention surface the
+            // widened loadManageableUser makes possible. Filters keep it navigable.
+            case SUPER_ADMIN -> userRepository.search(schoolId, role);
             case SCHOOL_ADMIN -> {
-                Long schoolId = currentUser.schoolIdOrNull();
-                if (schoolId == null) {
+                Long own = currentUser.schoolIdOrNull();
+                if (own == null) {
                     throw new BadRequestException("Your account is not linked to a school yet.");
                 }
-                yield userRepository.findSchoolMembers(schoolId);
+                // The requested school is ignored rather than trusted: a school admin
+                // is always pinned to its own, exactly as elsewhere.
+                yield userRepository.searchSchoolMembers(own, role);
             }
             default -> throw new AccessDeniedAppException("You do not have permission to view users");
         };
@@ -242,18 +253,30 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserResponse> getAssignableTeachers() {
+        return getAssignableByRole(UserRole.TEACHER);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponse> getAssignableByRole(UserRole role) {
         User currentUser = access.currentUser();
         access.requireAcademicManager(currentUser);
+
+        if (role == UserRole.SUPER_ADMIN || role == UserRole.SCHOOL_ADMIN) {
+            // These pickers exist to link a domain record to a login, and no domain
+            // record is ever owned by an admin account.
+            throw new BadRequestException("Admin accounts cannot be linked to a person record");
+        }
 
         Long schoolId = currentUser.getRole() == UserRole.SUPER_ADMIN
                 ? null
                 : currentUser.schoolIdOrNull();
 
-        List<User> teachers = schoolId == null
-                ? userRepository.findByRoleOrderByFullNameAsc(UserRole.TEACHER)
-                : userRepository.findBySchoolIdAndRoleOrderByFullNameAsc(schoolId, UserRole.TEACHER);
+        List<User> users = schoolId == null
+                ? userRepository.findByRoleOrderByFullNameAsc(role)
+                : userRepository.findBySchoolIdAndRoleOrderByFullNameAsc(schoolId, role);
 
-        return teachers.stream().map(userMapper::toResponse).toList();
+        return users.stream().map(userMapper::toResponse).toList();
     }
 
     // ------------------------------------------------------------------- update
@@ -372,17 +395,33 @@ public class UserServiceImpl implements UserService {
         if (user.getId().equals(currentUser.getId())) {
             throw new BadRequestException("You cannot delete your own account");
         }
-        // A student row references its login; clear that first or the FK blocks the delete.
+        // Student, teacher and parent rows all reference a login through userAccount.
+        // The FK would block the delete anyway; naming the record makes the fix obvious.
         if (studentRepository.existsByUserAccountId(id)) {
             throw new BadRequestException(
                     "This account is linked to a student record. Unlink it before deleting the account.");
+        }
+        if (teacherRepository.existsByUserAccountId(id)) {
+            throw new BadRequestException(
+                    "This account is linked to a teacher record. Unlink it before deleting the account.");
+        }
+        if (parentRepository.existsByUserAccountId(id)) {
+            throw new BadRequestException(
+                    "This account is linked to a parent record. Unlink it before deleting the account.");
         }
         userRepository.delete(user);
     }
 
     // ------------------------------------------------------------------ helpers
 
-    /** Loads a user the caller is allowed to see and act on, or throws 403/404. */
+    /**
+     * Loads a user the caller is allowed to see and act on, or throws 403/404.
+     *
+     * <p>A super admin reaches every account in every school, which is what makes it
+     * possible to reset a locked-out teacher's password or fix a mislinked parent without
+     * routing the request through a school admin. A school admin keeps its original reach:
+     * its own school, and never an admin account.
+     */
     private User loadManageableUser(UUID id) {
         User target = userRepository.findWithSchoolById(id)
                 .orElseThrow(() -> NotFoundException.of("User", id));
@@ -394,9 +433,7 @@ public class UserServiceImpl implements UserService {
 
         switch (currentUser.getRole()) {
             case SUPER_ADMIN -> {
-                if (target.getRole() != UserRole.SCHOOL_ADMIN) {
-                    throw new AccessDeniedAppException("A super admin may only manage School Admin accounts");
-                }
+                // Full override by design: every account, every school.
             }
             case SCHOOL_ADMIN -> {
                 if (target.getRole() == UserRole.SUPER_ADMIN || target.getRole() == UserRole.SCHOOL_ADMIN) {
@@ -413,9 +450,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void assertRoleAssignable(User currentUser, UserRole newRole) {
-        if (currentUser.getRole() == UserRole.SUPER_ADMIN && newRole != UserRole.SCHOOL_ADMIN) {
-            throw new AccessDeniedAppException("A super admin may only assign the School Admin role");
-        }
+        // A super admin may assign any role, including promoting another super admin.
         if (currentUser.getRole() == UserRole.SCHOOL_ADMIN
                 && (newRole == UserRole.SUPER_ADMIN || newRole == UserRole.SCHOOL_ADMIN)) {
             throw new AccessDeniedAppException("A school admin cannot assign admin roles");

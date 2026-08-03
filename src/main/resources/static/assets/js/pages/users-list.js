@@ -9,6 +9,7 @@
     const modalEl = document.getElementById('editUserModal');
 
     let users = [];
+    const roleFilter = document.getElementById('roleFilter');
 
     const ROLE_CLASSES = {
         SUPER_ADMIN: 'bg-danger-subtle text-danger-emphasis',
@@ -18,15 +19,23 @@
         PARENT: 'bg-warning-subtle text-warning-emphasis'
     };
 
-    /** A super admin only ever manages school admins; a school admin manages staff. */
+    const NON_ADMIN_ROLES = [
+        {id: 'TEACHER', name: 'Teacher'},
+        {id: 'STUDENT', name: 'Student'},
+        {id: 'PARENT', name: 'Parent'}
+    ];
+
+    /**
+     * Roles the signed-in admin may assign.
+     *
+     * A super admin may assign any role, which is what lets them fix a mis-provisioned
+     * account outright. A school admin is still barred from the two admin tiers.
+     */
     function assignableRoles() {
         return Shell.isSuperAdmin()
-            ? [{id: 'SCHOOL_ADMIN', name: 'School Admin'}]
-            : [
-                {id: 'TEACHER', name: 'Teacher'},
-                {id: 'STUDENT', name: 'Student'},
-                {id: 'PARENT', name: 'Parent'}
-            ];
+            ? [{id: 'SUPER_ADMIN', name: 'Super Admin'}, {id: 'SCHOOL_ADMIN', name: 'School Admin'}]
+                .concat(NON_ADMIN_ROLES)
+            : NON_ADMIN_ROLES;
     }
 
     function rowHtml(user) {
@@ -78,7 +87,10 @@
     async function load() {
         UI.table.loading(tbody, COLSPAN, 'Loading users...');
         try {
-            users = await Api.get('/api/v1/users');
+            // The role filter is applied server-side: a super admin's list now spans
+            // every school, so narrowing it in the browser would still fetch everything.
+            const role = roleFilter ? roleFilter.value : '';
+            users = await Api.get('/api/v1/users' + Api.query({role: role}));
             render(users);
         } catch (error) {
             UI.table.error(tbody, COLSPAN, error.message || 'Failed to load users.');
@@ -149,6 +161,9 @@
     });
 
     searchInput.addEventListener('input', filter);
+    if (roleFilter) {
+        roleFilter.addEventListener('change', load);
+    }
 
     UI.bindForm(editForm, {
         submitButton: document.getElementById('updateBtn'),

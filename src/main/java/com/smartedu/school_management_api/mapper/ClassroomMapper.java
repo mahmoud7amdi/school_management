@@ -6,6 +6,7 @@ import com.smartedu.school_management_api.entity.AcademicYear;
 import com.smartedu.school_management_api.entity.Classroom;
 import com.smartedu.school_management_api.entity.Grade;
 import com.smartedu.school_management_api.entity.School;
+import com.smartedu.school_management_api.entity.Section;
 import com.smartedu.school_management_api.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ public class ClassroomMapper {
         }
         Grade grade = classroom.getGrade();
         AcademicYear year = classroom.getAcademicYear();
+        Section section = classroom.getSection();
         User teacher = classroom.getClassTeacher();
         School school = classroom.getSchool();
 
@@ -29,6 +31,7 @@ public class ClassroomMapper {
                 classroom.getRoomNumber(),
                 grade != null ? ReferenceResponse.of(grade.getId(), grade.getName()) : null,
                 year != null ? ReferenceResponse.of(year.getId(), year.getName()) : null,
+                section != null ? ReferenceResponse.of(section.getId(), section.getName()) : null,
                 teacher != null ? teacher.getFullName() : null,
                 school != null ? ReferenceResponse.of(school.getId(), school.getName()) : null,
                 studentCount,

@@ -104,15 +104,20 @@
             }
         }
 
+        // Only the two actions this module owns are handled. Matching on 'delete'
+        // explicitly rather than treating everything-but-edit as a delete lets a page add
+        // its own row actions without them opening a delete dialog.
         config.tbody.addEventListener('click', function (event) {
             const button = event.target.closest('[data-action]');
             if (!button) {
                 return;
             }
+            const action = button.getAttribute('data-action');
             const id = button.getAttribute('data-id');
-            if (button.getAttribute('data-action') === 'edit') {
+
+            if (action === 'edit') {
                 openEdit(id);
-            } else {
+            } else if (action === 'delete') {
                 remove(id, button.getAttribute('data-name') || 'this ' + config.label);
             }
         });

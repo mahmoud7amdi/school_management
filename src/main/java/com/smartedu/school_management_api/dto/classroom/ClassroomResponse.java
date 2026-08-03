@@ -11,6 +11,7 @@ public record ClassroomResponse(
         String roomNumber,
         ReferenceResponse grade,
         ReferenceResponse academicYear,
+        ReferenceResponse section,
         String classTeacherName,
         ReferenceResponse school,
         long studentCount,

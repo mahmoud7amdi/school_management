@@ -27,6 +27,9 @@ public record ClassroomRequest(
         Long academicYearId,
 
         /** Optional homeroom teacher; must be a TEACHER in the same school. */
-        UUID classTeacherId
+        UUID classTeacherId,
+
+        /** Optional grade division; must belong to the same grade and school. */
+        Long sectionId
 ) {
 }

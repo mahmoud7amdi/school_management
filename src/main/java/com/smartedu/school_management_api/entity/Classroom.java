@@ -36,7 +36,8 @@ import java.util.List;
         indexes = {
                 @Index(name = "idx_classroom_school", columnList = "school_id"),
                 @Index(name = "idx_classroom_grade", columnList = "grade_id"),
-                @Index(name = "idx_classroom_year", columnList = "academic_year_id")
+                @Index(name = "idx_classroom_year", columnList = "academic_year_id"),
+                @Index(name = "idx_classroom_section", columnList = "section_id")
         })
 @Getter
 @Setter
@@ -66,6 +67,15 @@ public class Classroom extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "grade_id", nullable = false)
     private Grade grade;
+
+    /**
+     * The grade division this class belongs to ("A", "B"). Optional: a school that
+     * does not divide its grades leaves it null, and the classroom name carries the
+     * whole label.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "section_id")
+    private Section section;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "academic_year_id", nullable = false)

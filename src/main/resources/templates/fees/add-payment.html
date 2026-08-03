@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Record Payment')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/fees/payments}" class="text-secondary">Payments</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Record</li>
+                    </ol>
+                </nav>
+                <h1>Record Payment</h1>
+                <p class="page-subtitle">A payment towards one fee item by one student.</p>
+            </div>
+            <a th:href="@{/dashboard/fees/payments}" class="btn btn-light">
+                <i class="ti ti-arrow-left me-1"></i> Back to Payments
+            </a>
+        </div>
+
+        <div class="card form-card shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <form id="feePaymentForm" class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="receiptNumber">Receipt no. <span class="text-danger">*</span></label>
+                            <input type="text" id="receiptNumber" name="receiptNumber" class="form-control"
+                                   placeholder="e.g. RCPT-0001" maxlength="40" required autofocus />
+                            <div class="invalid-feedback" data-server-feedback>Please enter a receipt number.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="amountPaid">Amount <span class="text-danger">*</span></label>
+                            <input type="number" id="amountPaid" name="amountPaid" class="form-control"
+                                   min="0.01" step="0.01" required />
+                            <div class="invalid-feedback" data-server-feedback>Please enter an amount.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="studentId">Student <span class="text-danger">*</span></label>
+                            <select id="studentId" name="studentId" class="form-select" required></select>
+                            <div class="invalid-feedback" data-server-feedback>Please select a student.</div>
+                            <div class="form-text">The school is taken from the student.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="feeStructureId">Fee item <span class="text-danger">*</span></label>
+                            <select id="feeStructureId" name="feeStructureId" class="form-select" required></select>
+                            <div class="invalid-feedback" data-server-feedback>Please select a fee item.</div>
+                            <div class="form-text">Only items for the student's grade are listed.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="paymentDate">Date <span class="text-danger">*</span></label>
+                            <input type="date" id="paymentDate" name="paymentDate" class="form-control" required />
+                            <div class="invalid-feedback" data-server-feedback>Please pick a date.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="method">Method <span class="text-danger">*</span></label>
+                            <select id="method" name="method" class="form-select" required>
+                                <option value="">Select method</option>
+                                <option value="CASH">Cash</option>
+                                <option value="CARD">Card</option>
+                                <option value="BANK_TRANSFER">Bank Transfer</option>
+                                <option value="MOBILE_MONEY">Mobile Money</option>
+                                <option value="CHEQUE">Cheque</option>
+                                <option value="WAIVER">Waiver</option>
+                            </select>
+                            <div class="invalid-feedback" data-server-feedback>Please select a method.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="status">Status <span class="text-danger">*</span></label>
+                            <select id="status" name="status" class="form-select" required>
+                                <option value="COMPLETED">Completed</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="FAILED">Failed</option>
+                                <option value="REFUNDED">Refunded</option>
+                            </select>
+                            <div class="invalid-feedback" data-server-feedback>Please select a status.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="remarks">Remarks</label>
+                            <input type="text" id="remarks" name="remarks" class="form-control" maxlength="255" />
+                            <div class="invalid-feedback" data-server-feedback></div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary" id="saveBtn">
+                            <i class="ti ti-check me-1"></i> Record Payment
+                        </button>
+                        <a th:href="@{/dashboard/fees/payments}" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/payment-shared.js}"></script>
+<script th:src="@{/assets/js/pages/fee-payment-form.js}"></script>
+
+</body>
+</html>

@@ -60,6 +60,17 @@ public class DashboardController {
         return "students/add-student";
     }
 
+    // --- Parents -----------------------------------------------------------
+    @GetMapping("/dashboard/parents/all")
+    public String allParents() {
+        return "parents/all-parents";
+    }
+
+    @GetMapping("/dashboard/parents/add")
+    public String addParent() {
+        return "parents/add-parent";
+    }
+
     // --- Academics ---------------------------------------------------------
     @GetMapping("/dashboard/academic-years/all")
     public String allAcademicYears() {
@@ -99,5 +110,123 @@ public class DashboardController {
     @GetMapping("/dashboard/classrooms/add")
     public String addClassroom() {
         return "classrooms/add-classroom";
+    }
+
+    @GetMapping("/dashboard/sections/all")
+    public String allSections() {
+        return "sections/all-sections";
+    }
+
+    @GetMapping("/dashboard/sections/add")
+    public String addSection() {
+        return "sections/add-section";
+    }
+
+    // --- Staff -------------------------------------------------------------
+    @GetMapping("/dashboard/teachers/all")
+    public String allTeachers() {
+        return "teachers/all-teachers";
+    }
+
+    @GetMapping("/dashboard/teachers/add")
+    public String addTeacher() {
+        return "teachers/add-teacher";
+    }
+
+    // --- Enrollment --------------------------------------------------------
+    @GetMapping("/dashboard/enrollments/all")
+    public String allEnrollments() {
+        return "enrollments/all-enrollments";
+    }
+
+    @GetMapping("/dashboard/enrollments/add")
+    public String addEnrollment() {
+        return "enrollments/add-enrollment";
+    }
+
+    // --- Attendance --------------------------------------------------------
+    @GetMapping("/dashboard/attendance/all")
+    public String allAttendance() {
+        return "attendance/all-attendance";
+    }
+
+    /** The daily register. Picks its class and date client-side. */
+    @GetMapping("/dashboard/attendance/register")
+    public String attendanceRegister() {
+        return "attendance/attendance-register";
+    }
+
+    // --- Exams -------------------------------------------------------------
+    @GetMapping("/dashboard/exams/all")
+    public String allExams() {
+        return "exams/all-exams";
+    }
+
+    @GetMapping("/dashboard/exams/add")
+    public String addExam() {
+        return "exams/add-exam";
+    }
+
+    /** Marks entry. The exam is chosen client-side via {@code ?examId=}. */
+    @GetMapping("/dashboard/exams/results")
+    public String examResults() {
+        return "exams/exam-results";
+    }
+
+    // --- Fees --------------------------------------------------------------
+    @GetMapping("/dashboard/fees/structures")
+    public String allFeeStructures() {
+        return "fees/all-fee-structures";
+    }
+
+    @GetMapping("/dashboard/fees/structures/add")
+    public String addFeeStructure() {
+        return "fees/add-fee-structure";
+    }
+
+    @GetMapping("/dashboard/fees/payments")
+    public String allFeePayments() {
+        return "fees/all-payments";
+    }
+
+    @GetMapping("/dashboard/fees/payments/add")
+    public String addFeePayment() {
+        return "fees/add-payment";
+    }
+
+    // --- Self-service portal ------------------------------------------------
+    // Shells only, like every other route here. Each one loads from /api/v1/portal/**,
+    // which is where the role is actually enforced.
+
+    @GetMapping("/dashboard/portal/classes")
+    public String myClasses() {
+        return "portal/teacher-classes";
+    }
+
+    @GetMapping("/dashboard/portal/children")
+    public String myChildren() {
+        return "portal/children";
+    }
+
+    /** Own attendance for a student; per-child for a parent, chosen client-side. */
+    @GetMapping("/dashboard/portal/my-attendance")
+    public String myAttendance() {
+        return "portal/my-attendance";
+    }
+
+    @GetMapping("/dashboard/portal/my-results")
+    public String myResults() {
+        return "portal/my-results";
+    }
+
+    @GetMapping("/dashboard/portal/my-fees")
+    public String myFees() {
+        return "portal/my-fees";
+    }
+
+    /** Submission for a family, review queue for a teacher — one page, two modes. */
+    @GetMapping("/dashboard/portal/absence-notes")
+    public String absenceNotes() {
+        return "portal/absence-notes";
     }
 }

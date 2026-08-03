@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Parents')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Parents</li>
+                    </ol>
+                </nav>
+                <h1>Parents</h1>
+                <p class="page-subtitle" id="resultSummary">Loading...</p>
+            </div>
+            <a th:href="@{/dashboard/parents/add}" class="btn btn-primary">
+                <i class="ti ti-plus me-1"></i> Add Parent
+            </a>
+        </div>
+
+        <div class="table-toolbar">
+            <div class="toolbar-search">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent"><i class="ti ti-search"></i></span>
+                    <input type="search" id="searchInput" class="form-control"
+                           placeholder="Search parents..." aria-label="Search parents" />
+                </div>
+            </div>
+            <div class="toolbar-spacer"></div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table app-table mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th>Parent</th>
+                            <th>Contact</th>
+                            <th>Occupation</th>
+                            <th>Children</th>
+                            <th class="school-col">School</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        <tr><td colspan="6" class="table-state"><i class="ti ti-loader-2"></i>Loading parents...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/parents-list.js}"></script>
+
+</body>
+</html>

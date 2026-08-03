@@ -4,6 +4,7 @@ import com.smartedu.school_management_api.dto.ApiResponse;
 import com.smartedu.school_management_api.dto.user.CreateUserRequest;
 import com.smartedu.school_management_api.dto.user.UpdateUserRequest;
 import com.smartedu.school_management_api.dto.user.UserResponse;
+import com.smartedu.school_management_api.entity.UserRole;
 import com.smartedu.school_management_api.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -38,15 +41,30 @@ public class UserController {
                 .body(ApiResponse.created(created, "User created successfully"));
     }
 
+    /**
+     * Users the caller may administer, optionally narrowed by school or role. A super
+     * admin sees every account; a school admin stays pinned to its own school.
+     */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
-        return ResponseEntity.ok(ApiResponse.ok(userService.getAllUsers(), "Users loaded"));
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers(
+            @RequestParam(required = false) Long schoolId,
+            @RequestParam(required = false) UserRole role) {
+        return ResponseEntity.ok(ApiResponse.ok(userService.getAllUsers(schoolId, role), "Users loaded"));
     }
 
     /** Teachers eligible to be a homeroom teacher, scoped to the caller's school. */
     @GetMapping("/teachers")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAssignableTeachers() {
         return ResponseEntity.ok(ApiResponse.ok(userService.getAssignableTeachers(), "Teachers loaded"));
+    }
+
+    /**
+     * Logins of one role in the caller's school, for the "link an account" pickers on the
+     * teacher, student and parent forms. Generalises {@link #getAssignableTeachers()}.
+     */
+    @GetMapping("/by-role/{role}")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getUsersByRole(@PathVariable UserRole role) {
+        return ResponseEntity.ok(ApiResponse.ok(userService.getAssignableByRole(role), "Users loaded"));
     }
 
     @GetMapping("/{id}")

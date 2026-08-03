@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Children')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Children</li>
+                    </ol>
+                </nav>
+                <h1>My Children</h1>
+                <p class="page-subtitle" id="resultSummary">Loading...</p>
+            </div>
+        </div>
+
+        <div class="row g-4" id="childCards">
+            <div class="col-12">
+                <p class="text-secondary mb-0">Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/portal-shared.js}"></script>
+<script th:src="@{/assets/js/pages/portal-children.js}"></script>
+
+</body>
+</html>

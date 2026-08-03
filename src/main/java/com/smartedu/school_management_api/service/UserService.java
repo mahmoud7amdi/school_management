@@ -5,6 +5,7 @@ import com.smartedu.school_management_api.dto.user.CreateUserRequest;
 import com.smartedu.school_management_api.dto.user.UpdateProfileRequest;
 import com.smartedu.school_management_api.dto.user.UpdateUserRequest;
 import com.smartedu.school_management_api.dto.user.UserResponse;
+import com.smartedu.school_management_api.entity.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
@@ -18,7 +19,11 @@ public interface UserService {
 
     UserResponse createUser(CreateUserRequest request);
 
-    List<UserResponse> getAllUsers();
+    /**
+     * Users the caller may see. Both filters are optional; a school admin is always
+     * pinned to its own school regardless of {@code schoolId}.
+     */
+    List<UserResponse> getAllUsers(Long schoolId, UserRole role);
 
     UserResponse getUserById(UUID id);
 
@@ -33,4 +38,7 @@ public interface UserService {
 
     /** Teachers in the caller's school, for the classroom homeroom picker. */
     List<UserResponse> getAssignableTeachers();
+
+    /** Logins of one role in the caller's school, for the account-link pickers. */
+    List<UserResponse> getAssignableByRole(UserRole role);
 }

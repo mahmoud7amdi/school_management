@@ -11,6 +11,7 @@
 
     const USER_KEY = 'sm.user';
     const MANAGER_ROLES = ['SUPER_ADMIN', 'SCHOOL_ADMIN'];
+    const PORTAL_ROLES = ['TEACHER', 'STUDENT', 'PARENT'];
 
     let currentUser = null;
 
@@ -89,6 +90,10 @@
 
     function isManager(user) {
         return !!user && MANAGER_ROLES.includes(user.role);
+    }
+
+    function isPortal(user) {
+        return !!user && PORTAL_ROLES.includes(user.role);
     }
 
     /**
@@ -225,6 +230,10 @@
         isManager: () => isManager(currentUser),
         isSuperAdmin: () => !!currentUser && currentUser.role === 'SUPER_ADMIN',
         isSchoolAdmin: () => !!currentUser && currentUser.role === 'SCHOOL_ADMIN',
+        isTeacher: () => !!currentUser && currentUser.role === 'TEACHER',
+        isStudent: () => !!currentUser && currentUser.role === 'STUDENT',
+        isParent: () => !!currentUser && currentUser.role === 'PARENT',
+        isPortalUser: () => isPortal(currentUser),
         requireRole: requireRole,
         requireManager: () => requireRole(MANAGER_ROLES),
         logout: logout,

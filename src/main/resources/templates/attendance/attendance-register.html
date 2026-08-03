@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Daily Register')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Attendance</li>
+                    </ol>
+                </nav>
+                <h1>Daily Register</h1>
+                <p class="page-subtitle">Mark one class for one day, then save the whole register.</p>
+            </div>
+            <a th:href="@{/dashboard/attendance/all}" class="btn btn-light">
+                <i class="ti ti-list me-1"></i> All Records
+            </a>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <form id="registerControls" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label" for="classroomId">Classroom <span class="text-danger">*</span></label>
+                        <select id="classroomId" name="classroomId" class="form-select" required></select>
+                        <div class="invalid-feedback">Please select a classroom.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="attendanceDate">Date <span class="text-danger">*</span></label>
+                        <input type="date" id="attendanceDate" name="attendanceDate" class="form-control" required />
+                        <div class="invalid-feedback">Please pick a date.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="subjectId">Subject (optional)</label>
+                        <select id="subjectId" name="subjectId" class="form-select">
+                            <option value="">Whole day</option>
+                        </select>
+                        <div class="form-text">Pick a subject to mark per period.</div>
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button type="submit" class="btn btn-primary" id="loadBtn">
+                            <i class="ti ti-refresh me-1"></i> Load Register
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-transparent d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="mb-0">Register</h5>
+                    <div class="small text-secondary" id="registerMeta">Choose a classroom and date to begin.</div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="small text-secondary" id="markSummary"></span>
+                    <button type="button" class="btn btn-ghost-secondary btn-sm" id="markAllPresentBtn">
+                        Mark all present
+                    </button>
+                    <button type="button" class="btn btn-primary" id="saveRegisterBtn" disabled>
+                        <i class="ti ti-device-floppy me-1"></i> Save Register
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table app-table mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Admission</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                        </tr>
+                        </thead>
+                        <tbody id="registerBody">
+                        <tr><td colspan="4" class="table-state"><i class="ti ti-clipboard-list"></i>No register loaded.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/attendance-register.js}"></script>
+
+</body>
+</html>
