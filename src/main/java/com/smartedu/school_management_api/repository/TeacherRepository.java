@@ -37,6 +37,14 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
     long countBySchoolIdAndStatus(Long schoolId, TeacherStatus status);
 
+    /** Teachers per school, for the platform report. See {@link SchoolCountProjection}. */
+    @Query("""
+            select t.school.id as schoolId, count(t) as total
+            from Teacher t
+            group by t.school.id
+            """)
+    List<SchoolCountProjection> countGroupedBySchool();
+
     /**
      * Teachers who may be given a class or section. Includes those with no subjects
      * assigned yet, so a newly-created teacher is immediately pickable.

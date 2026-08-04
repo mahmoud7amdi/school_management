@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/attendance")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN')")
+@PreAuthorize("hasAuthority('SCHOOL_ADMIN')")
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
@@ -44,7 +44,7 @@ public class AttendanceController {
      * so a teacher can only load a register for a class they are assigned to.
      */
     @GetMapping("/register")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER')")
+    @PreAuthorize("hasAnyAuthority('SCHOOL_ADMIN', 'TEACHER')")
     public ResponseEntity<ApiResponse<List<AttendanceResponse>>> getRegister(
             @RequestParam Long classroomId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
@@ -73,7 +73,7 @@ public class AttendanceController {
      * {@code recordedById} from the body rather than trusting it.
      */
     @PostMapping("/register")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER')")
+    @PreAuthorize("hasAnyAuthority('SCHOOL_ADMIN', 'TEACHER')")
     public ResponseEntity<ApiResponse<List<AttendanceResponse>>> saveRegister(
             @Valid @RequestBody AttendanceBulkRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(attendanceService.saveRegister(request),

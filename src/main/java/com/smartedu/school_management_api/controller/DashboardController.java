@@ -22,6 +22,18 @@ public class DashboardController {
         return "index";
     }
 
+    /** Public About Us page. No login: this is the one page a visitor can read. */
+    @GetMapping("/about")
+    public String about() {
+        return "about";
+    }
+
+    /** Editor for the above. Content is saved through {@code PUT /api/v1/about}. */
+    @GetMapping("/dashboard/about")
+    public String editAbout() {
+        return "about-edit";
+    }
+
     // --- Schools -----------------------------------------------------------
     @GetMapping("/dashboard/schools/all")
     public String allSchools() {
@@ -31,6 +43,12 @@ public class DashboardController {
     @GetMapping("/dashboard/schools/add")
     public String addSchool() {
         return "schools/add-school";
+    }
+
+    /** Platform reports. Super admin only, enforced by {@code /api/v1/reports/**}. */
+    @GetMapping("/dashboard/reports")
+    public String reports() {
+        return "reports/platform-report";
     }
 
     // --- Users -------------------------------------------------------------

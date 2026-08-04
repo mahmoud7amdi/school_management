@@ -26,7 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/exams")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN')")
+@PreAuthorize("hasAuthority('SCHOOL_ADMIN')")
 public class ExamController {
 
     private final ExamService examService;
@@ -41,7 +41,7 @@ public class ExamController {
      * before it can render. The service authorises against the paper's class or grade.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER')")
+    @PreAuthorize("hasAnyAuthority('SCHOOL_ADMIN', 'TEACHER')")
     public ResponseEntity<ApiResponse<ExamResponse>> getExamById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(examService.getExamById(id), "Exam loaded"));
     }
@@ -68,7 +68,7 @@ public class ExamController {
     // --- Results ----------------------------------------------------------
 
     @GetMapping("/{id}/results")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER')")
+    @PreAuthorize("hasAnyAuthority('SCHOOL_ADMIN', 'TEACHER')")
     public ResponseEntity<ApiResponse<List<ExamResultResponse>>> getResults(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(examService.getResultsForExam(id), "Results loaded"));
     }
@@ -80,7 +80,7 @@ public class ExamController {
      * than silently writing marks against the wrong paper.
      */
     @PostMapping("/{id}/results")
-    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER')")
+    @PreAuthorize("hasAnyAuthority('SCHOOL_ADMIN', 'TEACHER')")
     public ResponseEntity<ApiResponse<List<ExamResultResponse>>> saveResults(
             @PathVariable Long id, @Valid @RequestBody ExamResultBulkRequest request) {
         if (request.examId() != null && !request.examId().equals(id)) {

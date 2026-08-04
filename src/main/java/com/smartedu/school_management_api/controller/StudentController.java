@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/students")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN')")
+@PreAuthorize("hasAuthority('SCHOOL_ADMIN')")
 public class StudentController {
 
     private static final int MAX_PAGE_SIZE = 100;

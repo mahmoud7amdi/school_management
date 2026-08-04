@@ -3,8 +3,12 @@
  *
  * Dispatches on the signed-in role rather than guarding with requireManager(): this page
  * is where requireManager() sends people it turns away, so gating it would bounce a
- * teacher back to the page they are already on. Admins load /dashboard/stats; the three
- * portal roles load /portal/summary, which returns a role-shaped payload.
+ * teacher back to the page they are already on.
+ *
+ * Three payloads, one per audience. A super admin loads /reports/platform, because its
+ * remit is the platform — schools, administrator appointments, reporting — and it is
+ * refused school-scoped data by the API. A school admin loads /dashboard/stats for its
+ * own school. The three portal roles load /portal/summary, which is role-shaped.
  */
 (function () {
     'use strict';
@@ -16,6 +20,14 @@
         }
     }
 
+    /**
+     * Em-dash for a missing string. Deliberately not UI.dash(), which returns markup for
+     * innerHTML: setText writes textContent, so markup would show up as literal tags.
+     */
+    function text(value) {
+        return value === null || value === undefined || value === '' ? '—' : value;
+    }
+
     /** Em-dash for a missing number, so an empty tile never reads as a real zero. */
     function stat(value) {
         return value === null || value === undefined ? '—' : value;
@@ -25,7 +37,81 @@
         return value === null || value === undefined ? '—' : value + '%';
     }
 
-    // --- admin ---------------------------------------------------------------
+    // --- super admin ---------------------------------------------------------
+
+    /**
+     * The platform panel: the signed-in admin's own details plus platform figures.
+     *
+     * Aggregates only, matching what the endpoint returns. The per-school table shows
+     * counts so a school missing an administrator is visible at a glance, and stops
+     * there — naming the people inside a school is its own admin's business.
+     */
+    function renderPlatformAdmin(report) {
+        const profile = report.profile || {};
+        const totals = report.totals || {};
+
+        setText('scopeLabel', 'the platform');
+        setText('paName', text(profile.fullName));
+        setText('paUsername', text(profile.username));
+        setText('paEmail', text(profile.email));
+        setText('paPhone', text(profile.phoneNumber));
+        setText('paRole', text(profile.roleLabel));
+        setText('paMemberSince', text(profile.memberSince));
+
+        setText('paStatSchools', stat(totals.schools));
+        setText('paStatActiveSchools', stat(totals.activeSchools));
+        setText('paStatSchoolAdmins', stat(totals.schoolAdmins));
+        setText('paStatUsers', stat(totals.users));
+
+        const schoolsDetail = document.getElementById('paStatSchoolsDetail');
+        if (schoolsDetail && totals.schools) {
+            schoolsDetail.textContent = totals.inactiveSchools + ' inactive';
+        }
+        // A school with no admin is a gap to fill, so it is called out rather than counted.
+        const gap = document.getElementById('paStatAdminGap');
+        if (gap) {
+            gap.textContent = totals.schoolsWithoutAdmin
+                ? totals.schoolsWithoutAdmin + ' school' +
+                  (totals.schoolsWithoutAdmin === 1 ? '' : 's') + ' without one'
+                : 'Every school covered';
+            gap.classList.toggle('text-warning-emphasis', totals.schoolsWithoutAdmin > 0);
+        }
+        const hint = document.getElementById('paReportHint');
+        if (hint) {
+            hint.textContent = totals.students + ' students and ' + totals.teachers +
+                ' teachers across ' + totals.schools + ' school' + (totals.schools === 1 ? '' : 's') + '.';
+        }
+
+        renderPlatformSchools(report.schools || []);
+    }
+
+    /** Top schools by enrolment; the full breakdown lives on /dashboard/reports. */
+    function renderPlatformSchools(rows) {
+        const tbody = document.getElementById('paSchoolsBody');
+        if (!tbody) {
+            return;
+        }
+        if (rows.length === 0) {
+            UI.table.empty(tbody, 4, 'No schools registered yet.', 'ti-building-off');
+            return;
+        }
+
+        const top = rows.slice().sort(function (a, b) { return b.students - a.students; }).slice(0, 5);
+        tbody.innerHTML = top.map(function (school) {
+            return '<tr>' +
+                '<td class="fw-semibold">' + UI.escapeHtml(school.name || '') + '</td>' +
+                '<td class="text-end">' + (school.admins === 0
+                    ? UI.badge('None', 'bg-warning-subtle text-warning-emphasis')
+                    : school.admins) + '</td>' +
+                '<td class="text-end">' + school.students + '</td>' +
+                '<td>' + (school.active === false
+                    ? UI.badge('Inactive', 'bg-secondary-subtle text-secondary-emphasis')
+                    : UI.badge('Active', 'bg-success-subtle text-success-emphasis')) + '</td>' +
+                '</tr>';
+        }).join('');
+    }
+
+    // --- school admin --------------------------------------------------------
 
     /** Horizontal bars sized against the largest value in the set. */
     function renderGradeBreakdown(rows) {
@@ -64,14 +150,6 @@
         setText('statTeachers', stat(stats.teachers));
         setText('statYears', stat(stats.academicYears));
         setText('statCurrentYear', stats.currentAcademicYear || 'Not set');
-
-        if (stats.schools !== null && stats.schools !== undefined) {
-            setText('statSchools', stats.schools);
-        }
-        // A super admin's "users" figure counts school admins, not everyone.
-        if (Shell.isSuperAdmin()) {
-            setText('peopleLabel', 'School Admins');
-        }
 
         const active = document.getElementById('statActiveStudents');
         if (active && stats.students > 0) {
@@ -126,9 +204,9 @@
         setText('sStatResults', stat(student.resultsPublished));
         setText('sStatFees', stat(student.outstandingFeeItems));
         setText('sStatNotes', stat(student.submittedAbsenceNotes));
-        setText('sAdmissionNumber', UI.dash(student.admissionNumber));
-        setText('sGrade', UI.dash(student.gradeName));
-        setText('sClassroom', UI.dash(student.classroomName));
+        setText('sAdmissionNumber', text(student.admissionNumber));
+        setText('sGrade', text(student.gradeName));
+        setText('sClassroom', text(student.classroomName));
 
         const detail = document.getElementById('sStatAttendanceDetail');
         if (detail) {
@@ -183,6 +261,9 @@
                 // No session: Shell has already redirected to /login.
                 return null;
             }
+            if (Shell.isSuperAdmin()) {
+                return Api.get('/api/v1/reports/platform').then(renderPlatformAdmin);
+            }
             if (Shell.isManager()) {
                 return Api.get('/api/v1/dashboard/stats').then(renderAdmin);
             }
@@ -206,7 +287,7 @@
                     container.innerHTML = '<p class="text-danger mb-0">Failed to load.</p>';
                 }
             });
-            [['teacherClassesBody', 5], ['parentChildrenBody', 6]].forEach(function (pair) {
+            [['teacherClassesBody', 5], ['parentChildrenBody', 6], ['paSchoolsBody', 4]].forEach(function (pair) {
                 const tbody = document.getElementById(pair[0]);
                 if (tbody) {
                     UI.table.error(tbody, pair[1], 'Failed to load.');

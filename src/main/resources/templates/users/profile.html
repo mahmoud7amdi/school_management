@@ -30,8 +30,31 @@
             <div class="col-lg-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body text-center p-4">
-                        <img th:src="@{/assets/images/avatar/avatar-fallback.jpg}" alt=""
-                             class="avatar avatar-xl rounded-circle mb-3 user-avatar" width="96" height="96" />
+                        <!--
+                          Profile picture. Available to every role: this is the one part of
+                          an account that belongs to nobody but its owner, so it needs no
+                          administrator. The file input is hidden behind a styled button —
+                          a bare file input cannot be restyled consistently.
+                        -->
+                        <div class="position-relative d-inline-block mb-3">
+                            <img th:src="@{/assets/images/avatar/avatar-fallback.jpg}" alt=""
+                                 class="avatar avatar-xl rounded-circle user-avatar" width="96" height="96"
+                                 id="avatarPreview" />
+                            <button type="button" class="btn btn-sm btn-primary rounded-circle position-absolute"
+                                    style="bottom: 0; right: 0; width: 32px; height: 32px; padding: 0;"
+                                    id="avatarPickBtn" title="Change picture" aria-label="Change profile picture">
+                                <i class="ti ti-camera"></i>
+                            </button>
+                        </div>
+                        <input type="file" id="avatarInput" class="d-none"
+                               accept="image/jpeg,image/png,image/webp" />
+                        <p class="small text-secondary mb-2" id="avatarHint">JPG, PNG or WebP. Up to 2 MB.</p>
+                        <div class="d-flex justify-content-center gap-2 mb-1">
+                            <button type="button" class="btn btn-sm btn-outline-secondary d-none" id="avatarRemoveBtn">
+                                <i class="ti ti-trash me-1"></i>Remove picture
+                            </button>
+                        </div>
+
                         <h5 class="mb-0 user-full-name">&nbsp;</h5>
                         <p class="text-secondary small mb-2 user-username"></p>
                         <span class="badge bg-primary-subtle text-primary-emphasis user-role-badge"></span>

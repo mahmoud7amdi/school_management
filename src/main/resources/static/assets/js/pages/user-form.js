@@ -1,9 +1,10 @@
 /**
  * Add-user form.
  *
- * The role list and the school field both depend on who is signed in: a super
- * admin creates school admins and must pick a school; a school admin creates
- * staff, who join their own school automatically.
+ * The role list and the school field both depend on who is signed in. A super admin
+ * appoints administrators: a school admin, who must be given a school, or another super
+ * admin, who has none. A school admin adds its own staff and families, who join its school
+ * automatically. Anything wider is rejected by the API, so the options here mirror it.
  */
 (function () {
     'use strict';
@@ -20,11 +21,29 @@
         return raw === '' ? null : raw;
     }
 
+    /** A school admin belongs to a school; a super admin does not. */
+    function schoolNeeded() {
+        return superAdmin && roleSelect.value === 'SCHOOL_ADMIN';
+    }
+
+    function syncSchoolField() {
+        const needed = schoolNeeded();
+        schoolField.classList.toggle('d-none', !needed);
+        schoolSelect.required = needed;
+        if (!needed) {
+            schoolSelect.value = '';
+            schoolSelect.classList.remove('is-invalid');
+        }
+    }
+
     async function setUpForRole() {
         superAdmin = Shell.isSuperAdmin();
 
         const roles = superAdmin
-            ? [{id: 'SCHOOL_ADMIN', name: 'School Admin'}]
+            ? [
+                {id: 'SCHOOL_ADMIN', name: 'School Admin'},
+                {id: 'SUPER_ADMIN', name: 'Super Admin'}
+            ]
             : [
                 {id: 'TEACHER', name: 'Teacher'},
                 {id: 'STUDENT', name: 'Student'},
@@ -36,13 +55,20 @@
             return;
         }
 
-        schoolField.classList.remove('d-none');
-        schoolSelect.required = true;
+        // Retitled to match the nav: this form appoints administrators for a super admin.
+        const heading = document.querySelector('.page-header h1');
+        if (heading) {
+            heading.textContent = 'Appoint Administrator';
+        }
+
+        roleSelect.addEventListener('change', syncSchoolField);
+        syncSchoolField();
+
         try {
             const schools = await Api.get('/api/v1/schools');
             UI.fillSelect(schoolSelect, schools, {placeholder: 'Select school'});
             if (!schools.length) {
-                UI.toast('Add a school before creating a school admin.', 'warning');
+                UI.toast('Add a school before appointing a school admin.', 'warning');
             }
         } catch (error) {
             UI.toast('Could not load the school list', 'danger');
@@ -60,7 +86,7 @@
                 role: value('role'),
                 phoneNumber: value('phoneNumber')
             };
-            if (superAdmin) {
+            if (schoolNeeded()) {
                 payload.schoolId = value('schoolId');
             }
             return Api.post('/api/v1/users', payload);
@@ -73,7 +99,9 @@
         }
     });
 
-    Shell.requireManager()
+    // Both admin tiers create accounts: a super admin appoints administrators, a school
+    // admin adds its own staff and families. setUpForRole shapes the form for each.
+    Shell.requireAdmin()
         .then(setUpForRole)
         .catch(function () { /* redirect already under way */ });
 })();

@@ -22,6 +22,7 @@ import com.smartedu.school_management_api.repository.StudentRepository;
 import com.smartedu.school_management_api.repository.TeacherRepository;
 import com.smartedu.school_management_api.repository.TokenBlacklistRepository;
 import com.smartedu.school_management_api.repository.UserRepository;
+import com.smartedu.school_management_api.service.AvatarStorageService;
 import com.smartedu.school_management_api.service.CustomUserDetailsService;
 import com.smartedu.school_management_api.service.SchoolAccessService;
 import com.smartedu.school_management_api.service.UserService;
@@ -36,6 +37,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -46,7 +48,9 @@ import java.util.UUID;
  *
  * <p>Who may act on whom:
  * <ul>
- *   <li>{@code SUPER_ADMIN} manages {@code SCHOOL_ADMIN} accounts (and its own profile).</li>
+ *   <li>{@code SUPER_ADMIN} appoints and manages administrator accounts — other super
+ *       admins and school admins — plus its own profile. It cannot reach a school's
+ *       teachers, students or parents: that is the school admin's remit.</li>
  *   <li>{@code SCHOOL_ADMIN} manages teachers/students/parents inside its own school.</li>
  *   <li>Anyone may edit their own profile via {@link #updateOwnProfile}, which cannot
  *       change role, active state or school.</li>
@@ -72,6 +76,7 @@ public class UserServiceImpl implements UserService {
     private final AdminProperties adminProperties;
     private final SchoolAccessService access;
     private final UserMapper userMapper;
+    private final AvatarStorageService avatarStorage;
 
     // ---------------------------------------------------------------- bootstrap
 
@@ -184,10 +189,16 @@ public class UserServiceImpl implements UserService {
     /** Applies the role-creation matrix and returns the school the new user belongs to. */
     private School resolveSchoolForCreate(User currentUser, UserRole targetRole, Long requestedSchoolId) {
         if (currentUser.getRole() == UserRole.SUPER_ADMIN) {
-            // A super admin may now provision any role directly, not just School Admins,
-            // so it can stand in for a school with no working admin of its own.
+            // Appointing administrators only. Provisioning a teacher, student or parent is
+            // school-operational work and belongs to the school's own admin, so offering it
+            // here would put a super admin back inside a school's roster.
+            if (targetRole != UserRole.SUPER_ADMIN && targetRole != UserRole.SCHOOL_ADMIN) {
+                throw new AccessDeniedAppException(
+                        "A super admin appoints administrators. Ask the school's admin to add a "
+                                + targetRole.getLabel().toLowerCase() + ".");
+            }
             if (targetRole == UserRole.SUPER_ADMIN) {
-                // A super admin has no school by design; every other role needs one.
+                // A super admin has no school by design.
                 return null;
             }
             if (requestedSchoolId == null) {
@@ -220,9 +231,9 @@ public class UserServiceImpl implements UserService {
         User currentUser = access.currentUser();
 
         List<User> users = switch (currentUser.getRole()) {
-            // Every account, so the Users page can act as the intervention surface the
-            // widened loadManageableUser makes possible. Filters keep it navigable.
-            case SUPER_ADMIN -> userRepository.search(schoolId, role);
+            // Administrator accounts only. Appointing and maintaining admins is the super
+            // admin's remit; the people inside a school belong to that school's admin.
+            case SUPER_ADMIN -> userRepository.searchAdmins(schoolId, role);
             case SCHOOL_ADMIN -> {
                 Long own = currentUser.schoolIdOrNull();
                 if (own == null) {
@@ -260,6 +271,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<UserResponse> getAssignableByRole(UserRole role) {
         User currentUser = access.currentUser();
+        // Denies a super admin: linking a login to a person record is school-operational.
         access.requireAcademicManager(currentUser);
 
         if (role == UserRole.SUPER_ADMIN || role == UserRole.SCHOOL_ADMIN) {
@@ -268,15 +280,11 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Admin accounts cannot be linked to a person record");
         }
 
-        Long schoolId = currentUser.getRole() == UserRole.SUPER_ADMIN
-                ? null
-                : currentUser.schoolIdOrNull();
-
-        List<User> users = schoolId == null
-                ? userRepository.findByRoleOrderByFullNameAsc(role)
-                : userRepository.findBySchoolIdAndRoleOrderByFullNameAsc(schoolId, role);
-
-        return users.stream().map(userMapper::toResponse).toList();
+        return userRepository
+                .findBySchoolIdAndRoleOrderByFullNameAsc(access.schoolScopeForCurrentUser(), role)
+                .stream()
+                .map(userMapper::toResponse)
+                .toList();
     }
 
     // ------------------------------------------------------------------- update
@@ -384,6 +392,31 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
+    // ------------------------------------------------------------------- avatar
+
+    /**
+     * Stores a new profile picture for the caller.
+     *
+     * <p>No role check: this is the signed-in user's own picture, and the file is
+     * written under their user id, so one account can never overwrite another's.
+     */
+    @Override
+    @Transactional
+    public UserResponse updateOwnAvatar(MultipartFile file) {
+        User user = access.currentUser();
+        user.setAvatarUrl(avatarStorage.store(user.getId(), file));
+        return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Override
+    @Transactional
+    public UserResponse removeOwnAvatar() {
+        User user = access.currentUser();
+        avatarStorage.delete(user.getId());
+        user.setAvatarUrl(null);
+        return userMapper.toResponse(userRepository.save(user));
+    }
+
     // ------------------------------------------------------------------- delete
 
     @Override
@@ -417,10 +450,11 @@ public class UserServiceImpl implements UserService {
     /**
      * Loads a user the caller is allowed to see and act on, or throws 403/404.
      *
-     * <p>A super admin reaches every account in every school, which is what makes it
-     * possible to reset a locked-out teacher's password or fix a mislinked parent without
-     * routing the request through a school admin. A school admin keeps its original reach:
-     * its own school, and never an admin account.
+     * <p>A super admin reaches administrator accounts and its own, and nothing else. It can
+     * therefore appoint, suspend or replace a school's admin, but not reach into that
+     * school's teachers, students or parents — resetting a locked-out teacher's password is
+     * the school admin's job. A school admin keeps its original reach: its own school, and
+     * never an admin account.
      */
     private User loadManageableUser(UUID id) {
         User target = userRepository.findWithSchoolById(id)
@@ -433,7 +467,11 @@ public class UserServiceImpl implements UserService {
 
         switch (currentUser.getRole()) {
             case SUPER_ADMIN -> {
-                // Full override by design: every account, every school.
+                if (target.getRole() == null || !target.getRole().isAdmin()) {
+                    throw new AccessDeniedAppException(
+                            "A super admin manages administrator accounts. Ask the school's admin to "
+                                    + "manage its own staff and students.");
+                }
             }
             case SCHOOL_ADMIN -> {
                 if (target.getRole() == UserRole.SUPER_ADMIN || target.getRole() == UserRole.SCHOOL_ADMIN) {
@@ -450,10 +488,17 @@ public class UserServiceImpl implements UserService {
     }
 
     private void assertRoleAssignable(User currentUser, UserRole newRole) {
-        // A super admin may assign any role, including promoting another super admin.
         if (currentUser.getRole() == UserRole.SCHOOL_ADMIN
                 && (newRole == UserRole.SUPER_ADMIN || newRole == UserRole.SCHOOL_ADMIN)) {
             throw new AccessDeniedAppException("A school admin cannot assign admin roles");
+        }
+        // A super admin may promote or demote between the two admin tiers, but not convert
+        // an admin into school staff: that would push the account outside its own remit and
+        // leave it unmanageable by the school admin who would then own it.
+        if (currentUser.getRole() == UserRole.SUPER_ADMIN && !newRole.isAdmin()) {
+            throw new AccessDeniedAppException(
+                    "A super admin can only assign administrator roles. Ask the school's admin to "
+                            + "manage its own staff and students.");
         }
     }
 

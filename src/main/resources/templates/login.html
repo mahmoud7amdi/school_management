@@ -28,7 +28,7 @@
                 <div class="card-body p-6">
                     <div class="mb-4 text-center">
                         <a th:href="@{/}">
-                            <img th:src="@{/assets/images/brand/logo/logo-icon.svg}" class="mb-2" alt="School Management" />
+                            <img th:src="@{/assets/images/brand/logo/school-logo.svg}" class="mb-2" alt="School Management" width="48" height="48" />
                         </a>
                         <h1 class="mb-1 fw-bold fs-3">Sign in</h1>
                         <p class="text-secondary mb-0">Welcome back. Enter your details to continue.</p>
@@ -59,6 +59,10 @@
                             <button type="submit" class="btn btn-primary" id="loginBtn">Sign in</button>
                         </div>
                     </form>
+
+                    <p class="text-center text-secondary small mt-4 mb-0">
+                        <a th:href="@{/about}" class="text-decoration-none">About us</a>
+                    </p>
                 </div>
             </div>
         </div>

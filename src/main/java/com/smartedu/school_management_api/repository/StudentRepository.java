@@ -61,10 +61,28 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     long countByGradeId(Long gradeId);
 
+    /** Students per school, for the platform report. See {@link SchoolCountProjection}. */
+    @Query("""
+            select s.school.id as schoolId, count(s) as total
+            from Student s
+            group by s.school.id
+            """)
+    List<SchoolCountProjection> countGroupedBySchool();
+
+    /** As {@link #countGroupedBySchool()} but limited to one enrolment status. */
+    @Query("""
+            select s.school.id as schoolId, count(s) as total
+            from Student s
+            where s.status = :status
+            group by s.school.id
+            """)
+    List<SchoolCountProjection> countByStatusGroupedBySchool(@Param("status") StudentStatus status);
+
     /**
      * Paged search across name, admission number and email.
-     * {@code schoolId} null means "all schools" (super admin); a null/blank
-     * {@code search} or {@code status} skips that predicate.
+     * A null/blank {@code search} or {@code status} skips that predicate. The
+     * {@code schoolId} predicate is null-tolerant for query reuse, but callers always
+     * pass a concrete school.
      */
     @EntityGraph(attributePaths = {"school", "grade", "classroom"})
     @Query("""

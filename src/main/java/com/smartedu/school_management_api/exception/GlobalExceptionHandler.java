@@ -15,6 +15,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.HashMap;
@@ -105,6 +106,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNoHandler(NoHandlerFoundException ex) {
         return build(HttpStatus.NOT_FOUND, "Endpoint not found: " + ex.getRequestURL());
+    }
+
+    /**
+     * An upload past the container's ceiling. Thrown before any controller runs, so
+     * without this it would surface as a 500 rather than telling the user the file is
+     * too big.
+     */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUploadTooLarge(MaxUploadSizeExceededException ex) {
+        log.debug("Upload rejected as too large: {}", ex.getMessage());
+        return build(HttpStatus.PAYLOAD_TOO_LARGE, "That file is too large. Please choose a smaller image.");
     }
 
     @ExceptionHandler(IllegalStateException.class)

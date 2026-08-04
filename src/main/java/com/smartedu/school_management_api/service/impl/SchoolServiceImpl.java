@@ -80,7 +80,9 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     @Transactional(readOnly = true)
     public SchoolResponse getSchoolById(Long id) {
-        access.requireSchoolAccess(id);
+        // The school register is platform data, so a super admin reads any row here.
+        // requireSchoolAccess would deny it — that gate guards data *inside* a school.
+        access.requireSchoolVisible(id);
         return schoolMapper.toResponse(loadSchool(id));
     }
 

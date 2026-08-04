@@ -39,17 +39,16 @@ public class StudentServiceImpl implements StudentService {
     @Transactional(readOnly = true)
     public List<StudentResponse> getAllStudents() {
         Long schoolId = access.schoolScopeForCurrentUser();
-        List<Student> students = schoolId == null
-                ? studentRepository.findAllByOrderByLastNameAscFirstNameAsc()
-                : studentRepository.findBySchoolIdOrderByLastNameAscFirstNameAsc(schoolId);
-        return students.stream().map(mapper::toResponse).toList();
+        return studentRepository.findBySchoolIdOrderByLastNameAscFirstNameAsc(schoolId).stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public PageResponse<StudentResponse> searchStudents(String search, StudentStatus status,
                                                        Long gradeId, Long classroomId, Pageable pageable) {
-        // Null school scope = super admin, which the query reads as "every school".
+        // Always a concrete school: the caller is a school admin by the time this returns.
         Long schoolId = access.schoolScopeForCurrentUser();
         String term = (search == null || search.isBlank()) ? null : search.trim();
 

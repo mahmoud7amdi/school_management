@@ -10,11 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Aggregate counts for the dashboard home, in a single request. */
+/**
+ * Aggregate counts for the dashboard home, in a single request.
+ *
+ * <p>School admin only. A super admin's dashboard is served by
+ * {@link ReportController} instead, because these figures are school-operational.
+ */
 @RestController
 @RequestMapping("/api/v1/dashboard")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN')")
+@PreAuthorize("hasAuthority('SCHOOL_ADMIN')")
 public class DashboardStatsController {
 
     private final DashboardService dashboardService;

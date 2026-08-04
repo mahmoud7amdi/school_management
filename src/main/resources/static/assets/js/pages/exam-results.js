@@ -250,7 +250,7 @@
         return Array.from(byId.values());
     }
 
-    Shell.requireRole(['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER'])
+    Shell.requireRole(['SCHOOL_ADMIN', 'TEACHER'])
         .then(async function () {
             // A teacher sees only the papers they may mark; an admin sees the school's.
             // Rosters differ the same way: the portal returns just their own classes.

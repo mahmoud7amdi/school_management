@@ -50,11 +50,7 @@ public class ParentServiceImpl implements ParentService {
     @Transactional(readOnly = true)
     public List<ParentResponse> getAllParents() {
         Long schoolId = access.schoolScopeForCurrentUser();
-        List<Parent> parents = schoolId == null
-                ? parentRepository.findAllByOrderByLastNameAscFirstNameAsc()
-                : parentRepository.findBySchoolIdOrderByLastNameAscFirstNameAsc(schoolId);
-
-        return parents.stream()
+        return parentRepository.findBySchoolIdOrderByLastNameAscFirstNameAsc(schoolId).stream()
                 .map(parent -> mapper.toResponse(parent, childLinks(parent.getId())))
                 .toList();
     }

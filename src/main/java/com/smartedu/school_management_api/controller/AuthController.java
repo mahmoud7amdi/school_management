@@ -9,13 +9,17 @@ import com.smartedu.school_management_api.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Authentication and self-service profile.
@@ -53,5 +57,22 @@ public class AuthController {
     public ResponseEntity<ApiResponse<UserResponse>> updateOwnProfile(
             @Valid @RequestBody UpdateProfileRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(userService.updateOwnProfile(request), "Profile updated successfully"));
+    }
+
+    /**
+     * Uploads the caller's profile picture.
+     *
+     * <p>Multipart rather than a URL on {@code PUT /me}: the picture is a file the user
+     * has, not an address they know. Open to every signed-in role.
+     */
+    @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<UserResponse>> uploadOwnAvatar(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(ApiResponse.ok(userService.updateOwnAvatar(file), "Profile picture updated"));
+    }
+
+    /** Removes the caller's profile picture, reverting to their initials. */
+    @DeleteMapping("/me/avatar")
+    public ResponseEntity<ApiResponse<UserResponse>> removeOwnAvatar() {
+        return ResponseEntity.ok(ApiResponse.ok(userService.removeOwnAvatar(), "Profile picture removed"));
     }
 }

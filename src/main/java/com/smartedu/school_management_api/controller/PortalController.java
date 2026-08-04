@@ -79,11 +79,12 @@ public class PortalController {
     }
 
     /**
-     * Acknowledge or reject a note. Open to admins too, so a note still gets actioned
-     * when a class has no teacher assigned.
+     * Acknowledge or reject a note. Open to the school admin too, so a note still gets
+     * actioned when a class has no teacher assigned. Reviewing a note is school-operational
+     * work, so a super admin is not included.
      */
     @PutMapping("/absence-notes/{id}/review")
-    @PreAuthorize("hasAnyAuthority('TEACHER', 'SUPER_ADMIN', 'SCHOOL_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('TEACHER', 'SCHOOL_ADMIN')")
     public ResponseEntity<ApiResponse<AbsenceNoteResponse>> reviewAbsenceNote(
             @PathVariable Long id, @Valid @RequestBody AbsenceNoteReviewRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(portalService.reviewAbsenceNote(id, request),

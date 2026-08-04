@@ -9,8 +9,8 @@ import java.time.LocalDate;
 /**
  * Create/update payload for an academic year.
  *
- * <p>{@code schoolId} is honoured only for a super admin; a school admin is always
- * pinned to its own school. The end-after-start rule is checked in the service.
+ * <p>{@code schoolId} is ignored: the caller is always a school admin, pinned to its own
+ * school. The end-after-start rule is checked in the service.
  */
 public record AcademicYearRequest(
         @NotBlank(message = "Name is required")

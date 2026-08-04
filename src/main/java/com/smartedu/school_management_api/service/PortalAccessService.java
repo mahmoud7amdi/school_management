@@ -172,9 +172,12 @@ public class PortalAccessService {
 
     /**
      * The shared write check for classroom-level records — attendance registers and exam
-     * marks. An admin is authorised by the existing tenant rule; a teacher only for a
-     * class in their own scope. This is the one place the admin and teacher paths meet, so
-     * it lives here rather than being duplicated into each service.
+     * marks. A school admin is authorised by the existing tenant rule; a teacher only for
+     * a class in their own scope. This is the one place the admin and teacher paths meet,
+     * so it lives here rather than being duplicated into each service.
+     *
+     * <p>A super admin is denied: {@link UserRole#isAcademicManager()} excludes it, and it
+     * holds no teaching scope, so it falls through to the throw.
      *
      * @param schoolId the school owning the record, for the admin branch
      */
@@ -202,7 +205,7 @@ public class PortalAccessService {
      * <p>For a grade-wide paper a teacher is allowed when they teach at least one class in
      * that grade. Marking the whole grade is broader than one class, but it is the paper's
      * own scope: there is no narrower roster to offer, and the alternative would be leaving
-     * grade-wide marks enterable by admins only.
+     * grade-wide marks enterable by school admins only.
      */
     @Transactional(readOnly = true)
     public void requireExamRecordAccess(Long classroomId, Long gradeId, Long schoolId) {

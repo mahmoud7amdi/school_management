@@ -1,11 +1,14 @@
 package com.smartedu.school_management_api;
 
 import com.smartedu.school_management_api.entity.AbsenceNoteStatus;
+import com.smartedu.school_management_api.entity.AboutPage;
 import com.smartedu.school_management_api.entity.AttendanceStatus;
 import com.smartedu.school_management_api.entity.EnrollmentStatus;
 import com.smartedu.school_management_api.entity.PaymentStatus;
+import com.smartedu.school_management_api.entity.StudentStatus;
 import com.smartedu.school_management_api.entity.UserRole;
 import com.smartedu.school_management_api.repository.AbsenceNoteRepository;
+import com.smartedu.school_management_api.repository.AboutPageRepository;
 import com.smartedu.school_management_api.repository.AttendanceRepository;
 import com.smartedu.school_management_api.repository.ClassroomRepository;
 import com.smartedu.school_management_api.repository.EnrollmentRepository;
@@ -75,6 +78,8 @@ class RepositoryQuerySmokeTest {
     private AbsenceNoteRepository absenceNoteRepository;
     @Autowired
     private FeeAcknowledgementRepository feeAcknowledgementRepository;
+    @Autowired
+    private AboutPageRepository aboutPageRepository;
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
@@ -258,9 +263,36 @@ class RepositoryQuerySmokeTest {
         assertThat(examResultRepository.findByStudentIdOrderByExamExamDateDesc(1L)).isEmpty();
         assertThat(examResultRepository.countByStudentId(1L)).isZero();
 
-        assertThat(userRepository.search(null, null)).isNotNull();
-        assertThat(userRepository.search(1L, UserRole.TEACHER)).isEmpty();
+        assertThat(userRepository.searchAdmins(null, null)).isNotNull();
+        // A school role filter matches no administrator, so this narrows to nothing
+        // rather than widening past the two admin tiers the query is limited to.
+        assertThat(userRepository.searchAdmins(1L, UserRole.TEACHER)).isEmpty();
         assertThat(userRepository.searchSchoolMembers(1L, null)).isEmpty();
         assertThat(userRepository.searchSchoolMembers(1L, UserRole.PARENT)).isEmpty();
+    }
+
+    /**
+     * The grouped counts behind the platform report. These are hand-written JPQL with
+     * an aliased projection, so running each one proves the aliases match
+     * {@link com.smartedu.school_management_api.repository.SchoolCountProjection}'s
+     * getters — a mismatch there fails at query time, not at context startup.
+     */
+    @Test
+    void platformReportGroupedCountsExecute() {
+        assertThat(userRepository.countByRoleGroupedBySchool(UserRole.SCHOOL_ADMIN)).isNotNull();
+        assertThat(teacherRepository.countGroupedBySchool()).isNotNull();
+        assertThat(studentRepository.countGroupedBySchool()).isNotNull();
+        assertThat(studentRepository.countByStatusGroupedBySchool(StudentStatus.ACTIVE)).isNotNull();
+    }
+
+    /**
+     * The About page row. Proves the entity maps to a real table — its TEXT columns and
+     * the fixed singleton id are new, so a mapping error would otherwise only surface
+     * the first time somebody opened the public page.
+     */
+    @Test
+    void aboutPageLookupExecutes() {
+        assertThat(aboutPageRepository.findById(AboutPage.SINGLETON_ID)).isNotNull();
+        assertThat(aboutPageRepository.count()).isNotNegative();
     }
 }

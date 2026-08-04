@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 /**
  * Inbound payload for user creation.
  *
- * <p>{@code schoolId} is only honoured for a super admin creating a school admin; a
+ * <p>{@code schoolId} is honoured only when a super admin appoints a school admin; a
  * school admin always gets its own school, so a spoofed id in the body is ignored.
  */
 public record CreateUserRequest(

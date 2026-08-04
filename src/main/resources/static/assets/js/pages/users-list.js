@@ -191,7 +191,9 @@
         }
     });
 
-    Shell.requireManager()
+    // Both admin tiers manage accounts, but a different set: a super admin sees only
+    // administrators, a school admin only its own school's people. The API decides which.
+    Shell.requireAdmin()
         .then(load)
         .catch(function () { /* redirect already under way */ });
 })();

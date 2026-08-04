@@ -1,0 +1,13 @@
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>School Management</title>
+<!-- Art spans y 3.8-21.0; nudged down so it sits optically centred in the 28-unit box. -->
+<g transform="translate(0 1.5)">
+<!-- Cap body. Drawn first: the mortarboard is painted over its top edge. -->
+<path d="M8 13H20V18.4C20 19.7 17.3 20.8 14 20.8C10.7 20.8 8 19.7 8 18.4V13Z" fill="#007867"/>
+<!-- Tassel: cord tucks under the board's right tip, knot hangs free. -->
+<path d="M24.2 11V17.6" stroke="#00A76F" stroke-width="1.6" stroke-linecap="round"/>
+<circle cx="24.2" cy="19.4" r="1.6" fill="#00A76F"/>
+<!-- Mortarboard: rhombus with softened corners. -->
+<path d="M12.76 4.45Q14 3.8 15.24 4.45L24.96 9.55Q26.2 10.2 24.96 10.85L15.24 15.95Q14 16.6 12.76 15.95L3.04 10.85Q1.8 10.2 3.04 9.55Z" fill="#00A76F"/>
+</g>
+</svg>

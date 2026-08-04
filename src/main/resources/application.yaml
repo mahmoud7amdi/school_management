@@ -35,6 +35,13 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
+  servlet:
+    multipart:
+      # Container-level ceiling. The avatar service enforces its own, smaller limit and
+      # returns a proper message; this is the backstop for anything larger.
+      max-file-size: 5MB
+      max-request-size: 5MB
+
 app:
   jwt:
     # Override in every real environment: JWT_SECRET must be >= 32 characters.
@@ -50,6 +57,11 @@ app:
   security:
     # Purge expired blacklisted tokens nightly at 03:00.
     token-cleanup-cron: "0 0 3 * * *"
+  storage:
+    # Uploaded profile pictures. Point this at a backed-up volume in production:
+    # these files are not in the database and a fresh checkout will not have them.
+    upload-dir: ${UPLOAD_DIR:uploads}
+    max-avatar-bytes: 2097152
 
 server:
   port: 8080

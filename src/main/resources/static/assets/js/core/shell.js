@@ -10,7 +10,13 @@
     'use strict';
 
     const USER_KEY = 'sm.user';
-    const MANAGER_ROLES = ['SUPER_ADMIN', 'SCHOOL_ADMIN'];
+    const FALLBACK_AVATAR = '/assets/images/avatar/avatar-fallback.jpg';
+    // Roles that run a school day to day. SUPER_ADMIN is deliberately absent: its remit is
+    // the platform, and the API now rejects it on every school-scoped route, so including
+    // it here would let a page load only to have each of its requests come back 403.
+    const MANAGER_ROLES = ['SCHOOL_ADMIN'];
+    // Administrative accounts, for the pages both tiers share (users, own profile).
+    const ADMIN_ROLES = ['SUPER_ADMIN', 'SCHOOL_ADMIN'];
     const PORTAL_ROLES = ['TEACHER', 'STUDENT', 'PARENT'];
 
     let currentUser = null;
@@ -51,11 +57,12 @@
             el.textContent = user.school ? user.school.name : 'No school assigned';
         });
 
-        if (user.avatarUrl) {
-            document.querySelectorAll('.user-avatar').forEach(function (img) {
-                img.src = user.avatarUrl;
-            });
-        }
+        // Set both ways round: assigning only when a picture exists would leave the
+        // previous user's photo on screen after a removal, since the markup's default
+        // src is the fallback and nothing would put it back.
+        document.querySelectorAll('.user-avatar').forEach(function (img) {
+            img.src = user.avatarUrl || FALLBACK_AVATAR;
+        });
 
         const greeting = document.querySelector('.welcome-header');
         if (greeting) {
@@ -90,6 +97,10 @@
 
     function isManager(user) {
         return !!user && MANAGER_ROLES.includes(user.role);
+    }
+
+    function isAdmin(user) {
+        return !!user && ADMIN_ROLES.includes(user.role);
     }
 
     function isPortal(user) {
@@ -228,6 +239,7 @@
         ready: ready,
         user: () => currentUser,
         isManager: () => isManager(currentUser),
+        isAdmin: () => isAdmin(currentUser),
         isSuperAdmin: () => !!currentUser && currentUser.role === 'SUPER_ADMIN',
         isSchoolAdmin: () => !!currentUser && currentUser.role === 'SCHOOL_ADMIN',
         isTeacher: () => !!currentUser && currentUser.role === 'TEACHER',
@@ -235,7 +247,10 @@
         isParent: () => !!currentUser && currentUser.role === 'PARENT',
         isPortalUser: () => isPortal(currentUser),
         requireRole: requireRole,
+        /** Guards a school-operational page. Turns away a super admin. */
         requireManager: () => requireRole(MANAGER_ROLES),
+        /** Guards a page both admin tiers share. */
+        requireAdmin: () => requireRole(ADMIN_ROLES),
         logout: logout,
         onDomReady: onDomReady
     };

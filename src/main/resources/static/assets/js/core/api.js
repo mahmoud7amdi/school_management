@@ -39,8 +39,21 @@
         if (jwt) {
             headers.Authorization = 'Bearer ' + jwt;
         }
-        if (body !== undefined && body !== null) {
+
+        // FormData is sent as-is: the browser has to set Content-Type itself so the
+        // multipart boundary matches the body. Setting it here would break parsing.
+        const multipart = typeof FormData !== 'undefined' && body instanceof FormData;
+        if (body !== undefined && body !== null && !multipart) {
             headers['Content-Type'] = 'application/json';
+        }
+
+        let requestBody;
+        if (body === undefined || body === null) {
+            requestBody = undefined;
+        } else if (multipart) {
+            requestBody = body;
+        } else {
+            requestBody = JSON.stringify(body);
         }
 
         let response;
@@ -48,7 +61,7 @@
             response = await fetch(url, {
                 method: method,
                 headers: headers,
-                body: body !== undefined && body !== null ? JSON.stringify(body) : undefined
+                body: requestBody
             });
         } catch (networkError) {
             throw new ApiError('Cannot reach the server. Check your connection and try again.', 0, null);
@@ -91,6 +104,15 @@
         post: (url, body, options) => request('POST', url, body, options),
         put: (url, body, options) => request('PUT', url, body, options),
         del: (url, options) => request('DELETE', url, null, options),
+        /**
+         * Posts a single file as multipart/form-data under `field` (default "file").
+         * Goes through the same envelope handling and 401 redirect as every other call.
+         */
+        upload: (url, file, field, options) => {
+            const form = new FormData();
+            form.append(field || 'file', file);
+            return request('POST', url, form, options);
+        },
         redirectToLogin: redirectToLogin,
         /** Builds a query string from an object, dropping null/empty values. */
         query: function (params) {

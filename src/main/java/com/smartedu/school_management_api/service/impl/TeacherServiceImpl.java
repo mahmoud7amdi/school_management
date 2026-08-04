@@ -47,10 +47,9 @@ public class TeacherServiceImpl implements TeacherService {
     @Transactional(readOnly = true)
     public List<TeacherResponse> getAllTeachers() {
         Long schoolId = access.schoolScopeForCurrentUser();
-        List<Teacher> teachers = schoolId == null
-                ? teacherRepository.findAllByOrderByLastNameAscFirstNameAsc()
-                : teacherRepository.findBySchoolIdOrderByLastNameAscFirstNameAsc(schoolId);
-        return teachers.stream().map(mapper::toResponse).toList();
+        return teacherRepository.findBySchoolIdOrderByLastNameAscFirstNameAsc(schoolId).stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 
     @Override

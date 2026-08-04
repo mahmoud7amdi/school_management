@@ -7,6 +7,7 @@ import com.smartedu.school_management_api.dto.user.UpdateUserRequest;
 import com.smartedu.school_management_api.dto.user.UserResponse;
 import com.smartedu.school_management_api.entity.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +34,17 @@ public interface UserService {
 
     /** Self-service update for the signed-in user, whatever their role. */
     UserResponse updateOwnProfile(UpdateProfileRequest request);
+
+    /**
+     * Replaces the signed-in user's profile picture with {@code file}.
+     *
+     * <p>Open to every role: a profile picture is the one piece of an account that is
+     * nobody else's business, so it needs no administrator.
+     */
+    UserResponse updateOwnAvatar(MultipartFile file);
+
+    /** Clears the signed-in user's profile picture, falling back to their initials. */
+    UserResponse removeOwnAvatar();
 
     void deleteUser(UUID id);
 

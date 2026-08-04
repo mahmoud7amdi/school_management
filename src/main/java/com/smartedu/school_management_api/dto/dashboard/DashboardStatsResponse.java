@@ -3,12 +3,12 @@ package com.smartedu.school_management_api.dto.dashboard;
 import java.util.List;
 
 /**
- * Everything the dashboard home needs, in one round trip.
+ * Everything a school admin's dashboard home needs, in one round trip.
  *
- * <p>{@code schools} is null for a school admin, whose view is scoped to one school.
+ * <p>Always scoped to a single school. There is no cross-school variant: a super admin's
+ * dashboard is served by the platform report instead, so no field here spans schools.
  */
 public record DashboardStatsResponse(
-        Long schools,
         long users,
         long students,
         long activeStudents,

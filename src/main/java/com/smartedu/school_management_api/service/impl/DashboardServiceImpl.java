@@ -9,7 +9,6 @@ import com.smartedu.school_management_api.entity.UserRole;
 import com.smartedu.school_management_api.repository.AcademicYearRepository;
 import com.smartedu.school_management_api.repository.ClassroomRepository;
 import com.smartedu.school_management_api.repository.GradeRepository;
-import com.smartedu.school_management_api.repository.SchoolRepository;
 import com.smartedu.school_management_api.repository.StudentRepository;
 import com.smartedu.school_management_api.repository.SubjectRepository;
 import com.smartedu.school_management_api.repository.UserRepository;
@@ -25,11 +24,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Dashboard figures for a school admin.
+ *
+ * <p>Scoped to one school by construction. There is no cross-school variant: a super
+ * admin's dashboard is its own profile plus platform figures, served by
+ * {@link ReportServiceImpl}, so school-operational aggregates are never built for it.
+ */
 @Service
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
 
-    private final SchoolRepository schoolRepository;
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final GradeRepository gradeRepository;
@@ -42,40 +47,16 @@ public class DashboardServiceImpl implements DashboardService {
     @Transactional(readOnly = true)
     public DashboardStatsResponse getStats() {
         User currentUser = access.currentUser();
+        // Denies a super admin, whose dashboard reads /api/v1/reports/platform instead.
         access.requireAcademicManager(currentUser);
 
-        boolean superAdmin = currentUser.getRole() == UserRole.SUPER_ADMIN;
-        Long schoolId = superAdmin ? null : currentUser.schoolIdOrNull();
-
-        if (superAdmin) {
-            return buildGlobalStats();
-        }
-        return buildSchoolStats(schoolId, currentUser);
-    }
-
-    private DashboardStatsResponse buildGlobalStats() {
-        List<Student> students = studentRepository.findAllByOrderByLastNameAscFirstNameAsc();
-
-        return new DashboardStatsResponse(
-                schoolRepository.count(),
-                userRepository.countByRole(UserRole.SCHOOL_ADMIN),
-                studentRepository.count(),
-                studentRepository.countByStatus(StudentStatus.ACTIVE),
-                userRepository.countByRole(UserRole.TEACHER),
-                gradeRepository.count(),
-                subjectRepository.count(),
-                classroomRepository.count(),
-                academicYearRepository.count(),
-                null,
-                "All schools",
-                studentsByGrade(students),
-                studentsByStatus(students));
+        return buildSchoolStats(currentUser.schoolIdOrNull(), currentUser);
     }
 
     private DashboardStatsResponse buildSchoolStats(Long schoolId, User currentUser) {
         if (schoolId == null) {
             // School admin with no school yet: report zeroes rather than fail the page.
-            return new DashboardStatsResponse(null, 0, 0, 0, 0, 0, 0, 0, 0, null,
+            return new DashboardStatsResponse(0, 0, 0, 0, 0, 0, 0, 0, null,
                     "No school assigned", List.of(), List.of());
         }
 
@@ -88,7 +69,6 @@ public class DashboardServiceImpl implements DashboardService {
                 .orElse(null);
 
         return new DashboardStatsResponse(
-                null,
                 userRepository.countBySchoolId(schoolId),
                 studentRepository.countBySchoolId(schoolId),
                 studentRepository.countBySchoolIdAndStatus(schoolId, StudentStatus.ACTIVE),

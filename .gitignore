@@ -4,6 +4,11 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Uploads ###
+# User-uploaded profile pictures. Runtime data, not source: back up the configured
+# app.storage.upload-dir volume separately.
+uploads/
+
 ### STS ###
 .apt_generated
 .classpath

@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/sections")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN')")
+@PreAuthorize("hasAuthority('SCHOOL_ADMIN')")
 public class SectionController {
 
     private final SectionService sectionService;

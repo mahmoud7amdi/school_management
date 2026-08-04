@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Teaching assignments — the authority for what a teacher may see in the portal.
+ * Teaching assignments â€” the authority for what a teacher may see in the portal.
  *
  * <p>Administered here; a teacher reads their own through {@link PortalController}.
  */
 @RestController
 @RequestMapping("/api/v1/teaching-assignments")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN')")
+@PreAuthorize("hasAuthority('SCHOOL_ADMIN')")
 public class TeachingAssignmentController {
 
     private final TeachingAssignmentService assignmentService;

@@ -38,8 +38,9 @@ public class SecurityConfig {
     @org.springframework.core.annotation.Order(1)
     public SecurityFilterChain webChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/", "/login", "/dashboard/**", "/index.html", "/error",
+                .securityMatcher("/", "/login", "/about", "/dashboard/**", "/index.html", "/error",
                         "/assets/**", "/css/**", "/js/**", "/images/**", "/favicon.ico",
+                        "/uploads/**",
                         "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
@@ -65,6 +66,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/login", HttpMethod.POST.name())).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/logout", HttpMethod.POST.name())).permitAll()
+                        // The About page is public to read. Editing it is guarded on the
+                        // controller, so only the GET is opened here.
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/about", HttpMethod.GET.name())).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

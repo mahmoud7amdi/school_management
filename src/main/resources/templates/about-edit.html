@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Edit About Page')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">About Page</li>
+                    </ol>
+                </nav>
+                <h1>About Page</h1>
+                <p class="page-subtitle" id="lastUpdated">The public page visitors see at /about.</p>
+            </div>
+            <a th:href="@{/about}" target="_blank" rel="noopener" class="btn btn-outline-secondary">
+                <i class="ti ti-external-link me-1"></i> View public page
+            </a>
+        </div>
+
+        <form id="aboutForm" class="needs-validation" novalidate>
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0">Content</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <label class="form-label" for="title">Title <span class="text-danger">*</span></label>
+                                <input type="text" id="title" name="title" class="form-control"
+                                       maxlength="150" required />
+                                <div class="invalid-feedback" data-server-feedback>Title is required.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="tagline">Tagline</label>
+                                <input type="text" id="tagline" name="tagline" class="form-control" maxlength="300" />
+                                <div class="form-text">One line under the title.</div>
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="body">About text</label>
+                                <textarea id="body" name="body" class="form-control" rows="8"
+                                          maxlength="20000"></textarea>
+                                <div class="form-text">Line breaks are preserved on the public page.</div>
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label" for="mission">Mission</label>
+                                <textarea id="mission" name="mission" class="form-control" rows="4"
+                                          maxlength="20000"></textarea>
+                                <div class="form-text">Left blank, this section is hidden.</div>
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0">Contact details</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <label class="form-label" for="contactEmail">Email</label>
+                                <input type="email" id="contactEmail" name="contactEmail" class="form-control"
+                                       maxlength="150" />
+                                <div class="invalid-feedback" data-server-feedback>Please enter a valid email.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="contactPhone">Phone</label>
+                                <input type="tel" id="contactPhone" name="contactPhone" class="form-control"
+                                       maxlength="30" />
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="address">Address</label>
+                                <input type="text" id="address" name="address" class="form-control" maxlength="255" />
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label" for="website">Website</label>
+                                <input type="url" id="website" name="website" class="form-control"
+                                       placeholder="https://example.com" maxlength="255" />
+                                <div class="form-text">Must start with http:// or https:// to be shown.</div>
+                                <div class="invalid-feedback" data-server-feedback></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" id="saveAboutBtn">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/about-edit.js}"></script>
+
+</body>
+</html>

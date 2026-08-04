@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Platform Reports')}"></head>
+<body>
+
+<div th:replace="~{fragments/layout :: sidebar}"></div>
+<div th:replace="~{fragments/layout :: mobileNav}"></div>
+
+<div id="content" class="position-relative h-100">
+    <div th:replace="~{fragments/layout :: topbar}"></div>
+
+    <div class="custom-container">
+        <!--
+          Aggregate reporting for the super admin. Deliberately counts only: this is the
+          one place the role sees figures drawn from inside schools, and it never names a
+          student, guardian or staff member. The roster belongs to each school's own admin.
+        -->
+        <div class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Reports</li>
+                    </ol>
+                </nav>
+                <h1>Platform Reports</h1>
+                <p class="page-subtitle" id="resultSummary">Loading reports...</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary" id="printReportBtn">
+                    <i class="ti ti-printer me-1"></i> Print
+                </button>
+                <a th:href="@{/dashboard/schools/all}" class="btn btn-primary">
+                    <i class="ti ti-building-community me-1"></i> Manage Schools
+                </a>
+            </div>
+        </div>
+
+        <!-- Platform totals -->
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="stat-icon bg-primary-subtle text-primary-emphasis"><i class="ti ti-building-community"></i></span>
+                        <div>
+                            <p class="stat-label">Schools</p>
+                            <h3 class="stat-value" id="rpSchools">&mdash;</h3>
+                            <span class="small text-secondary" id="rpSchoolsDetail"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="stat-icon bg-info-subtle text-info-emphasis"><i class="ti ti-shield-lock"></i></span>
+                        <div>
+                            <p class="stat-label">Administrators</p>
+                            <h3 class="stat-value" id="rpAdmins">&mdash;</h3>
+                            <span class="small text-secondary" id="rpAdminsDetail"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="stat-icon bg-success-subtle text-success-emphasis"><i class="ti ti-school"></i></span>
+                        <div>
+                            <p class="stat-label">Students</p>
+                            <h3 class="stat-value" id="rpStudents">&mdash;</h3>
+                            <span class="small text-secondary" id="rpStudentsDetail"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card stat-card">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="stat-icon bg-warning-subtle text-warning-emphasis"><i class="ti ti-chalkboard"></i></span>
+                        <div>
+                            <p class="stat-label">Teachers</p>
+                            <h3 class="stat-value" id="rpTeachers">&mdash;</h3>
+                            <span class="small text-secondary" id="rpAccountsDetail"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--
+          Surfaced as its own banner rather than a tile: a school with no administrator
+          cannot be run by anyone but the super admin, so it is a gap to act on, not a
+          statistic to note. Hidden by the page script when the count is zero.
+        -->
+        <div class="alert alert-warning d-none align-items-center gap-2" id="rpAdminGapAlert" role="alert">
+            <i class="ti ti-alert-triangle fs-4"></i>
+            <div>
+                <span id="rpAdminGapText"></span>
+                <a th:href="@{/dashboard/users/add}" class="alert-link ms-1">Appoint an administrator</a>.
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-transparent d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h5 class="mb-0">Breakdown by school</h5>
+                <div class="toolbar-search">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent"><i class="ti ti-search"></i></span>
+                        <input type="search" id="reportSearch" class="form-control"
+                               placeholder="Search schools..." aria-label="Search schools" />
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table app-table mb-0 align-middle">
+                        <thead>
+                        <tr>
+                            <th>School</th>
+                            <th class="text-end">Admins</th>
+                            <th class="text-end">Teachers</th>
+                            <th class="text-end">Students</th>
+                            <th class="text-end">Active</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                        <tr><td colspan="6" class="table-state"><i class="ti ti-loader-2"></i>Loading reports...</td></tr>
+                        </tbody>
+                        <tfoot class="d-none" id="reportTableFoot">
+                        <tr class="fw-semibold border-top">
+                            <td>Total</td>
+                            <td class="text-end" id="rpFootAdmins">&mdash;</td>
+                            <td class="text-end" id="rpFootTeachers">&mdash;</td>
+                            <td class="text-end" id="rpFootStudents">&mdash;</td>
+                            <td class="text-end" id="rpFootActive">&mdash;</td>
+                            <td></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:src="@{/assets/js/pages/platform-report.js}"></script>
+
+</body>
+</html>

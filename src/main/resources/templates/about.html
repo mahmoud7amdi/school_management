@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>About Us | School Management</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" th:href="@{/assets/images/favicon/apple-icon-57x57.png}" />
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets/images/favicon/favicon-32x32.png}" />
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/assets/images/favicon/favicon-16x16.png}" />
+
+    <script th:src="@{/assets/js/vendors/color-modes.js}"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
+    <link rel="stylesheet" th:href="@{/assets/css/theme.css}" />
+    <link rel="stylesheet" th:href="@{/assets/css/app.css}" />
+</head>
+
+<!--
+  Public page. Standalone rather than built on fragments/layout, because that layout is
+  the signed-in dashboard shell: it assumes a session, gates its nav by role and would
+  bounce a visitor to /login. Content is fetched from the public GET /api/v1/about.
+-->
+<body>
+<nav class="navbar navbar-expand-lg border-bottom">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" th:href="@{/}">
+            <img th:src="@{/assets/images/brand/logo/school-logo.svg}" alt="" width="32" height="32" />
+            <span class="fw-bold">School Management</span>
+        </a>
+        <a th:href="@{/login}" class="btn btn-primary btn-sm">
+            <i class="ti ti-login me-1"></i> Sign in
+        </a>
+    </div>
+</nav>
+
+<main class="container py-6">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9">
+            <div class="text-center mb-5">
+                <h1 class="fw-bold mb-2" id="aboutTitle">&nbsp;</h1>
+                <p class="fs-5 text-secondary mb-0" id="aboutTagline"></p>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-5">
+                    <p class="fs-6 mb-0" id="aboutBody" style="white-space: pre-line;"></p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4 d-none" id="aboutMissionCard">
+                <div class="card-body p-5">
+                    <h2 class="h5 fw-bold mb-3"><i class="ti ti-target-arrow me-2"></i>Our mission</h2>
+                    <p class="mb-0" id="aboutMission" style="white-space: pre-line;"></p>
+                </div>
+            </div>
+
+            <!-- Hidden until there is at least one contact detail to show. -->
+            <div class="card shadow-sm d-none" id="aboutContactCard">
+                <div class="card-body p-5">
+                    <h2 class="h5 fw-bold mb-3"><i class="ti ti-mail me-2"></i>Get in touch</h2>
+                    <dl class="row mb-0">
+                        <div class="col-md-6 mb-3 d-none" id="aboutEmailRow">
+                            <dt class="text-secondary fw-normal small">Email</dt>
+                            <dd class="mb-0 fw-semibold"><a href="#" id="aboutEmail" class="text-decoration-none"></a></dd>
+                        </div>
+                        <div class="col-md-6 mb-3 d-none" id="aboutPhoneRow">
+                            <dt class="text-secondary fw-normal small">Phone</dt>
+                            <dd class="mb-0 fw-semibold" id="aboutPhone"></dd>
+                        </div>
+                        <div class="col-md-6 mb-3 d-none" id="aboutAddressRow">
+                            <dt class="text-secondary fw-normal small">Address</dt>
+                            <dd class="mb-0 fw-semibold" id="aboutAddress"></dd>
+                        </div>
+                        <div class="col-md-6 mb-3 d-none" id="aboutWebsiteRow">
+                            <dt class="text-secondary fw-normal small">Website</dt>
+                            <dd class="mb-0 fw-semibold">
+                                <a href="#" id="aboutWebsite" target="_blank" rel="noopener noreferrer"
+                                   class="text-decoration-none"></a>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <p class="text-center text-secondary small mt-4 mb-0 d-none" id="aboutUpdated"></p>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/assets/js/core/api.js}"></script>
+<script th:src="@{/assets/js/pages/about.js}"></script>
+</body>
+</html>

@@ -232,7 +232,7 @@
         return true;
     }
 
-    Shell.requireRole(['SUPER_ADMIN', 'SCHOOL_ADMIN', 'TEACHER'])
+    Shell.requireRole(['SCHOOL_ADMIN', 'TEACHER'])
         .then(async function () {
             teacherMode = Shell.isTeacher();
 

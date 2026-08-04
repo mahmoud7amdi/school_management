@@ -62,7 +62,11 @@
                             <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" maxlength="30" />
                             <div class="invalid-feedback" data-server-feedback></div>
                         </div>
-                        <!-- Shown only for a super admin: a school admin's users join their own school. -->
+                        <!--
+                          Shown only when a super admin is appointing a school admin. A
+                          school admin's own users join its school automatically, and a
+                          super admin has no school, so both other cases hide this.
+                        -->
                         <div class="col-12 d-none" id="schoolField">
                             <label class="form-label" for="schoolId">School <span class="text-danger">*</span></label>
                             <select id="schoolId" name="schoolId" class="form-select"></select>
