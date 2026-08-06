@@ -105,16 +105,26 @@
     }
 
     function toPayload() {
-        return {
+        const payload = {
             firstName: value('firstName'),
             lastName: value('lastName'),
             email: value('email'),
             phoneNumber: value('phoneNumber'),
             occupation: value('occupation'),
             address: value('address'),
-            userAccountId: value('userAccountId'),
             children: collectChildren()
         };
+
+        // Only a new guardian provisions a sign-in; an edit leaves the existing one alone.
+        if (!isEdit) {
+            payload.account = {
+                username: value('accountUsername'),
+                password: document.getElementById('accountPassword').value,
+                active: document.getElementById('accountActive').checked
+            };
+        }
+
+        return payload;
     }
 
     function fill(parent) {
@@ -139,6 +149,13 @@
         }
         document.getElementById('saveBtn').innerHTML =
             '<i class="ti ti-check me-1"></i> Save Changes';
+
+        // The sign-in already exists, so the account fields are removed rather than
+        // hidden — a hidden `required` input blocks submission and shows nothing.
+        const accountSection = document.getElementById('accountSection');
+        if (accountSection) {
+            accountSection.remove();
+        }
     }
 
     UI.bindForm(form, {
@@ -158,16 +175,7 @@
 
     Shell.requireManager()
         .then(async function () {
-            const [studentList, accounts] = await Promise.all([
-                Api.get('/api/v1/students/all'),
-                Api.get('/api/v1/users/by-role/PARENT')
-            ]);
-            students = studentList || [];
-
-            UI.fillSelect(document.getElementById('userAccountId'), accounts, {
-                placeholder: 'No login account',
-                label: (user) => user.fullName + ' (@' + user.username + ')'
-            });
+            students = (await Api.get('/api/v1/students/all')) || [];
 
             if (isEdit) {
                 switchToEditMode();

@@ -6,11 +6,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
+
 /**
  * Inbound payload for user creation.
  *
  * <p>{@code schoolId} is honoured only when a super admin appoints a school admin; a
  * school admin always gets its own school, so a spoofed id in the body is ignored.
+ *
+ * <p>The appointment fields at the end describe the person's post and are stored as a
+ * {@code SchoolAdmin} record alongside the account. They apply only when {@code role} is
+ * {@code SCHOOL_ADMIN} and are ignored otherwise — a super admin holds no post at any one
+ * school.
  */
 public record CreateUserRequest(
         @NotBlank(message = "Username is required")
@@ -39,6 +46,18 @@ public record CreateUserRequest(
         @Size(max = 500)
         String avatarUrl,
 
-        Long schoolId
+        Long schoolId,
+
+        // --- Appointment (SCHOOL_ADMIN only) ---------------------------------
+        @Size(max = 120, message = "Job title must not exceed 120 characters")
+        String jobTitle,
+
+        @Size(max = 120, message = "Department must not exceed 120 characters")
+        String department,
+
+        @Size(max = 60, message = "Office must not exceed 60 characters")
+        String office,
+
+        LocalDate appointmentDate
 ) {
 }

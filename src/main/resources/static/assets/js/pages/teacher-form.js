@@ -1,4 +1,4 @@
-/** Add teacher. The school comes from the caller's tenant. */
+/** Add teacher. The school comes from the caller's tenant, and the sign-in is created with the record. */
 (function () {
     'use strict';
 
@@ -15,7 +15,7 @@
             lastName: document.getElementById('lastName').value.trim(),
             gender: document.getElementById('gender').value,
             dateOfBirth: document.getElementById('dateOfBirth').value || null,
-            email: document.getElementById('email').value.trim() || null,
+            email: document.getElementById('email').value.trim(),
             phoneNumber: document.getElementById('phoneNumber').value.trim() || null,
             address: document.getElementById('address').value.trim() || null,
             qualification: document.getElementById('qualification').value.trim() || null,
@@ -23,10 +23,14 @@
             hireDate: document.getElementById('hireDate').value,
             status: document.getElementById('status').value,
             subjectIds: selectedSubjectIds(),
-            userAccountId: document.getElementById('userAccountId').value || null
+            account: {
+                username: document.getElementById('accountUsername').value.trim(),
+                password: document.getElementById('accountPassword').value,
+                active: document.getElementById('accountActive').checked
+            }
         }),
         onSuccess: function () {
-            UI.toast('Teacher added', 'success');
+            UI.toast('Teacher added, and their sign-in was created', 'success');
             window.setTimeout(function () {
                 window.location.href = '/dashboard/teachers/all';
             }, 700);
@@ -35,18 +39,11 @@
 
     Shell.requireManager()
         .then(async function () {
-            const [subjects, users] = await Promise.all([
-                Api.get('/api/v1/subjects'),
-                Api.get('/api/v1/users/teachers')
-            ]);
+            const subjects = await Api.get('/api/v1/subjects');
 
             UI.fillSelect(document.getElementById('subjectIds'), subjects, {
                 placeholder: null,
                 label: (subject) => subject.name
-            });
-            UI.fillSelect(document.getElementById('userAccountId'), users, {
-                placeholder: 'No login account',
-                label: (user) => user.fullName + ' (@' + user.username + ')'
             });
 
             if (!subjects.length) {

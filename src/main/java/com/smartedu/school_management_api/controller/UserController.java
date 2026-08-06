@@ -58,15 +58,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.ok(userService.getAssignableTeachers(), "Teachers loaded"));
     }
 
-    /**
-     * Logins of one role in the caller's school, for the "link an account" pickers on the
-     * teacher, student and parent forms. Generalises {@link #getAssignableTeachers()}.
-     */
-    @GetMapping("/by-role/{role}")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getUsersByRole(@PathVariable UserRole role) {
-        return ResponseEntity.ok(ApiResponse.ok(userService.getAssignableByRole(role), "Users loaded"));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.ok(userService.getUserById(id), "User loaded"));

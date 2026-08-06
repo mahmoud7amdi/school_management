@@ -19,11 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/dashboard")
 @RequiredArgsConstructor
+
 @PreAuthorize("hasAuthority('SCHOOL_ADMIN')")
 public class DashboardStatsController {
 
     private final DashboardService dashboardService;
-
+//    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SCHOOL_ADMIN')")
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<DashboardStatsResponse>> getStats() {
         return ResponseEntity.ok(ApiResponse.ok(dashboardService.getStats(), "Statistics loaded"));

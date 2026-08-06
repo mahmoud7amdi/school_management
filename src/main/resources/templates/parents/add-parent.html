@@ -42,9 +42,10 @@
                                     <div class="invalid-feedback" data-server-feedback>Please enter a last name.</div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="email">Email</label>
-                                    <input type="email" id="email" name="email" class="form-control" maxlength="150" />
+                                    <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
+                                    <input type="email" id="email" name="email" class="form-control" maxlength="150" required />
                                     <div class="invalid-feedback" data-server-feedback>Please enter a valid email.</div>
+                                    <div class="form-text">Also the sign-in address, so it must be unique across the platform.</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="phoneNumber">Phone number</label>
@@ -56,16 +57,44 @@
                                     <input type="text" id="occupation" name="occupation" class="form-control" maxlength="120" />
                                     <div class="invalid-feedback" data-server-feedback></div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="userAccountId">Login account</label>
-                                    <select id="userAccountId" name="userAccountId" class="form-select"></select>
-                                    <div class="form-text">Optional. Only Parent accounts appear here.</div>
-                                    <div class="invalid-feedback" data-server-feedback></div>
-                                </div>
                                 <div class="col-12">
                                     <label class="form-label" for="address">Address</label>
                                     <input type="text" id="address" name="address" class="form-control" maxlength="255" />
                                     <div class="invalid-feedback" data-server-feedback></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account access. Removed in edit mode: the sign-in already exists. -->
+                    <div class="card shadow-sm mt-4" id="accountSection">
+                        <div class="card-header bg-transparent">
+                            <h5 class="mb-0">Account access</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-secondary small mb-3">
+                                Saving this guardian also creates their sign-in for the family portal,
+                                using the email above.
+                            </p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="accountUsername">Username <span class="text-danger">*</span></label>
+                                    <input type="text" id="accountUsername" name="accountUsername" class="form-control"
+                                           placeholder="e.g. a.ibrahim" minlength="3" maxlength="50" required
+                                           autocomplete="off" />
+                                    <div class="invalid-feedback" data-server-feedback>Please enter a username of 3-50 characters.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="accountPassword">Password <span class="text-danger">*</span></label>
+                                    <input type="password" id="accountPassword" name="accountPassword" class="form-control"
+                                           minlength="6" maxlength="100" required autocomplete="new-password" />
+                                    <div class="invalid-feedback" data-server-feedback>Password must be at least 6 characters.</div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="accountActive" checked />
+                                        <label class="form-check-label" for="accountActive">Allow sign-in immediately</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

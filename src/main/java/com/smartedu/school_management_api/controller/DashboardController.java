@@ -51,17 +51,21 @@ public class DashboardController {
         return "reports/platform-report";
     }
 
-    // --- Users -------------------------------------------------------------
-    @GetMapping("/dashboard/users/all")
-    public String allUsers() {
-        return "users/all-users";
+    // --- Administrators ----------------------------------------------------
+    // Super admin only, enforced by /api/v1/users/**. School admins are appointed here and
+    // nowhere else; a school's own admin provisions teachers, students and parents through
+    // their respective pages, which create the sign-in account along with the record.
+    @GetMapping("/dashboard/admins/all")
+    public String allAdmins() {
+        return "admins/all-admins";
     }
 
-    @GetMapping("/dashboard/users/add")
-    public String addUser() {
-        return "users/add-user";
+    @GetMapping("/dashboard/admins/add")
+    public String addAdmin() {
+        return "admins/add-admin";
     }
 
+    /** Self-service, for every role. Not part of administrator management. */
     @GetMapping("/dashboard/users/profile")
     public String profile() {
         return "users/profile";

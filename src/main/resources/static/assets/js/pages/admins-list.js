@@ -1,4 +1,4 @@
-/** Users list: search, edit modal, delete. Role options depend on who is signed in. */
+/** Administrators list: search, edit modal, delete. Super admin only. */
 (function () {
     'use strict';
 
@@ -13,30 +13,20 @@
 
     const ROLE_CLASSES = {
         SUPER_ADMIN: 'bg-danger-subtle text-danger-emphasis',
-        SCHOOL_ADMIN: 'bg-primary-subtle text-primary-emphasis',
-        TEACHER: 'bg-info-subtle text-info-emphasis',
-        STUDENT: 'bg-success-subtle text-success-emphasis',
-        PARENT: 'bg-warning-subtle text-warning-emphasis'
+        SCHOOL_ADMIN: 'bg-primary-subtle text-primary-emphasis'
     };
 
-    const NON_ADMIN_ROLES = [
-        {id: 'TEACHER', name: 'Teacher'},
-        {id: 'STUDENT', name: 'Student'},
-        {id: 'PARENT', name: 'Parent'}
-    ];
-
     /**
-     * Roles the signed-in admin may assign.
+     * Roles assignable from this page.
      *
-     * A super admin may assign any role, which is what lets them fix a mis-provisioned
-     * account outright. A school admin is still barred from the two admin tiers.
+     * Only the two admin tiers: a teacher, student or parent account exists alongside a
+     * personnel record, so switching someone into one of those roles here would leave an
+     * account with no record behind it. Those are managed from their own pages.
      */
-    function assignableRoles() {
-        return Shell.isSuperAdmin()
-            ? [{id: 'SUPER_ADMIN', name: 'Super Admin'}, {id: 'SCHOOL_ADMIN', name: 'School Admin'}]
-                .concat(NON_ADMIN_ROLES)
-            : NON_ADMIN_ROLES;
-    }
+    const ADMIN_ROLE_OPTIONS = [
+        {id: 'SUPER_ADMIN', name: 'Super Admin'},
+        {id: 'SCHOOL_ADMIN', name: 'School Admin'}
+    ];
 
     function rowHtml(user) {
         const name = UI.escapeHtml(user.fullName || user.username);
@@ -70,30 +60,33 @@
     function render(list) {
         const summary = document.getElementById('resultSummary');
         if (summary) {
-            summary.textContent = users.length + ' user' + (users.length === 1 ? '' : 's');
+            summary.textContent = users.length +
+                ' administrator' + (users.length === 1 ? '' : 's');
         }
         if (!list.length) {
             UI.table.empty(tbody, COLSPAN,
-                users.length ? 'No users match your search.' : 'No users yet.', 'ti-users-off');
+                users.length ? 'No administrators match your search.' : 'No administrators yet.',
+                'ti-users-off');
             return;
         }
         tbody.innerHTML = list.map(rowHtml).join('');
-        // A school admin's users all share one school, so the column adds nothing.
-        if (!Shell.isSuperAdmin()) {
-            document.querySelectorAll('.school-col').forEach((el) => el.classList.add('d-none'));
-        }
     }
 
+    /**
+     * Loads administrators.
+     *
+     * No client-side narrowing is needed: for a super admin the API already restricts this
+     * list to administrator accounts (`searchAdmins`), so an empty filter means "both admin
+     * tiers", not "every account on the platform".
+     */
     async function load() {
-        UI.table.loading(tbody, COLSPAN, 'Loading users...');
+        UI.table.loading(tbody, COLSPAN, 'Loading administrators...');
         try {
-            // The role filter is applied server-side: a super admin's list now spans
-            // every school, so narrowing it in the browser would still fetch everything.
             const role = roleFilter ? roleFilter.value : '';
             users = await Api.get('/api/v1/users' + Api.query({role: role}));
             render(users);
         } catch (error) {
-            UI.table.error(tbody, COLSPAN, error.message || 'Failed to load users.');
+            UI.table.error(tbody, COLSPAN, error.message || 'Failed to load administrators.');
         }
     }
 
@@ -123,7 +116,7 @@
         document.getElementById('password').value = '';
         document.getElementById('active').checked = !!user.active;
 
-        UI.fillSelect(document.getElementById('role'), assignableRoles(), {placeholder: null});
+        UI.fillSelect(document.getElementById('role'), ADMIN_ROLE_OPTIONS, {placeholder: null});
         document.getElementById('role').value = user.role;
 
         bootstrap.Modal.getOrCreateInstance(modalEl).show();
@@ -131,7 +124,7 @@
 
     async function remove(id, name) {
         const confirmed = await UI.confirmDialog({
-            title: 'Delete user?',
+            title: 'Delete administrator?',
             message: 'This permanently removes the account for ' + name + '.',
             okText: 'Delete'
         });
@@ -140,10 +133,10 @@
         }
         try {
             await Api.del('/api/v1/users/' + id);
-            UI.toast('User deleted', 'success');
+            UI.toast('Administrator deleted', 'success');
             load();
         } catch (error) {
-            UI.toast(error.message || 'Could not delete the user', 'danger');
+            UI.toast(error.message || 'Could not delete the administrator', 'danger');
         }
     }
 
@@ -156,7 +149,7 @@
         if (button.getAttribute('data-action') === 'edit') {
             openEdit(id);
         } else {
-            remove(id, button.getAttribute('data-name') || 'this user');
+            remove(id, button.getAttribute('data-name') || 'this administrator');
         }
     });
 
@@ -186,14 +179,12 @@
         },
         onSuccess: function () {
             bootstrap.Modal.getInstance(modalEl).hide();
-            UI.toast('User updated', 'success');
+            UI.toast('Administrator updated', 'success');
             load();
         }
     });
 
-    // Both admin tiers manage accounts, but a different set: a super admin sees only
-    // administrators, a school admin only its own school's people. The API decides which.
-    Shell.requireAdmin()
+    Shell.requireRole(['SUPER_ADMIN'])
         .then(load)
         .catch(function () { /* redirect already under way */ });
 })();

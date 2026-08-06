@@ -259,6 +259,29 @@
     border-top: 1px dashed var(--ds-border-color);
 }
 
+/* Numbered section heading on the Create User form. The step badge makes the three
+   sections read as a sequence without turning the page into a real wizard. */
+.form-section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-section-step {
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--bs-primary, #0d6efd);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Toast stack, top-right, above modals. */
 .toast-stack {
     position: fixed;

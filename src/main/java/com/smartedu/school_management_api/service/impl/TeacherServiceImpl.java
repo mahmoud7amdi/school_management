@@ -17,9 +17,9 @@ import com.smartedu.school_management_api.repository.SectionRepository;
 import com.smartedu.school_management_api.repository.SubjectRepository;
 import com.smartedu.school_management_api.repository.TeacherRepository;
 import com.smartedu.school_management_api.repository.TeachingAssignmentRepository;
-import com.smartedu.school_management_api.repository.UserRepository;
 import com.smartedu.school_management_api.service.SchoolAccessService;
 import com.smartedu.school_management_api.service.TeacherService;
+import com.smartedu.school_management_api.service.UserProvisioningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,6 @@ import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +35,10 @@ public class TeacherServiceImpl implements TeacherService {
 
     private final TeacherRepository teacherRepository;
     private final SubjectRepository subjectRepository;
-    private final UserRepository userRepository;
     private final SectionRepository sectionRepository;
     private final AttendanceRepository attendanceRepository;
     private final TeachingAssignmentRepository teachingAssignmentRepository;
+    private final UserProvisioningService provisioning;
     private final SchoolAccessService access;
     private final StaffMapper mapper;
 
@@ -73,6 +72,17 @@ public class TeacherServiceImpl implements TeacherService {
 
         validateHireDate(request);
 
+        // The login is created here rather than being linked afterwards: adding a teacher
+        // and giving them access are one action, and sharing a transaction means a later
+        // failure (a duplicate employee number, say) rolls the account back with it.
+        User account = provisioning.provisionAccount(
+                request.account(),
+                UserRole.TEACHER,
+                request.firstName().trim() + " " + request.lastName().trim(),
+                request.email(),
+                request.phoneNumber(),
+                school);
+
         Teacher teacher = Teacher.builder()
                 .employeeNumber(employeeNumber)
                 .firstName(request.firstName().trim())
@@ -87,7 +97,7 @@ public class TeacherServiceImpl implements TeacherService {
                 .hireDate(request.hireDate())
                 .status(request.status() == null ? TeacherStatus.ACTIVE : request.status())
                 .subjects(resolveSubjects(request.subjectIds(), school.getId()))
-                .userAccount(resolveUserAccount(request.userAccountId(), school.getId(), null))
+                .userAccount(account)
                 .school(school)
                 .build();
 
@@ -125,7 +135,6 @@ public class TeacherServiceImpl implements TeacherService {
         // Replace in place: the collection is the owning side of teacher_subjects.
         teacher.getSubjects().clear();
         teacher.getSubjects().addAll(resolveSubjects(request.subjectIds(), schoolId));
-        teacher.setUserAccount(resolveUserAccount(request.userAccountId(), schoolId, id));
 
         return mapper.toResponse(teacherRepository.save(teacher));
     }
@@ -185,33 +194,6 @@ public class TeacherServiceImpl implements TeacherService {
             subjects.add(subject);
         }
         return subjects;
-    }
-
-    /**
-     * Links an optional login. The account must be a {@code TEACHER} in the same
-     * school and not already claimed by another teacher record.
-     */
-    private User resolveUserAccount(UUID userAccountId, Long schoolId, Long currentTeacherId) {
-        if (userAccountId == null) {
-            return null;
-        }
-        User user = userRepository.findWithSchoolById(userAccountId)
-                .orElseThrow(() -> NotFoundException.of("User", userAccountId));
-
-        if (user.getRole() != UserRole.TEACHER) {
-            throw new BadRequestException("The selected user account is not a teacher");
-        }
-        if (user.schoolIdOrNull() == null || !user.schoolIdOrNull().equals(schoolId)) {
-            throw new BadRequestException("The selected user account belongs to a different school");
-        }
-
-        boolean claimedByAnother = teacherRepository.findByUserAccountId(userAccountId)
-                .filter(existing -> currentTeacherId == null || !existing.getId().equals(currentTeacherId))
-                .isPresent();
-        if (claimedByAnother) {
-            throw new DuplicateResourceException("That user account is already linked to another teacher");
-        }
-        return user;
     }
 
     private void validateHireDate(TeacherRequest request) {

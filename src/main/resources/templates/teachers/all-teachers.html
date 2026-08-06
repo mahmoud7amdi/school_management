@@ -108,8 +108,8 @@
                             <div class="invalid-feedback" data-server-feedback>Please enter the hire date.</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="email">Email</label>
-                            <input type="email" id="email" name="email" class="form-control" maxlength="150" />
+                            <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
+                            <input type="email" id="email" name="email" class="form-control" maxlength="150" required />
                             <div class="invalid-feedback" data-server-feedback>Please enter a valid email.</div>
                         </div>
                         <div class="col-md-6">
@@ -142,11 +142,6 @@
                                 <option value="RETIRED">Retired</option>
                             </select>
                             <div class="invalid-feedback" data-server-feedback>Please select a status.</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="userAccountId">Login account</label>
-                            <select id="userAccountId" name="userAccountId" class="form-select"></select>
-                            <div class="invalid-feedback" data-server-feedback></div>
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="subjectIds">Subjects taught</label>

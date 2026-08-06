@@ -68,9 +68,10 @@
                             <div class="invalid-feedback" data-server-feedback></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="email">Email</label>
-                            <input type="email" id="email" name="email" class="form-control" maxlength="150" />
+                            <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
+                            <input type="email" id="email" name="email" class="form-control" maxlength="150" required />
                             <div class="invalid-feedback" data-server-feedback>Please enter a valid email.</div>
+                            <div class="form-text">Also the sign-in address, so it must be unique across the platform.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="address">Address</label>
@@ -98,12 +99,6 @@
                             </select>
                             <div class="invalid-feedback" data-server-feedback>Please select a status.</div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label" for="userAccountId">Login account</label>
-                            <select id="userAccountId" name="userAccountId" class="form-select"></select>
-                            <div class="invalid-feedback" data-server-feedback></div>
-                            <div class="form-text">Optional. Links this record to a sign-in.</div>
-                        </div>
                         <div class="col-md-6">
                             <label class="form-label" for="qualification">Qualification</label>
                             <input type="text" id="qualification" name="qualification" class="form-control"
@@ -121,6 +116,33 @@
                             <select id="subjectIds" name="subjectIds" class="form-select" multiple size="6"></select>
                             <div class="invalid-feedback" data-server-feedback></div>
                             <div class="form-text">Hold Ctrl (Cmd on Mac) to select more than one.</div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+                    <h6 class="text-uppercase text-secondary small fw-bold mb-1">Account access</h6>
+                    <p class="text-secondary small mb-3">
+                        Saving this teacher also creates their sign-in, using the email above.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" for="accountUsername">Username <span class="text-danger">*</span></label>
+                            <input type="text" id="accountUsername" name="accountUsername" class="form-control"
+                                   placeholder="e.g. m.hassan" minlength="3" maxlength="50" required
+                                   autocomplete="off" />
+                            <div class="invalid-feedback" data-server-feedback>Please enter a username of 3-50 characters.</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="accountPassword">Password <span class="text-danger">*</span></label>
+                            <input type="password" id="accountPassword" name="accountPassword" class="form-control"
+                                   minlength="6" maxlength="100" required autocomplete="new-password" />
+                            <div class="invalid-feedback" data-server-feedback>Password must be at least 6 characters.</div>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-center">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" id="accountActive" checked />
+                                <label class="form-check-label" for="accountActive">Allow sign-in immediately</label>
+                            </div>
                         </div>
                     </div>
 

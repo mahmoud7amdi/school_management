@@ -48,7 +48,7 @@
     }
 
     function toPayload() {
-        return {
+        const payload = {
             admissionNumber: value('admissionNumber'),
             firstName: value('firstName'),
             lastName: value('lastName'),
@@ -65,6 +65,17 @@
             gradeId: value('gradeId'),
             classroomId: value('classroomId')
         };
+
+        // Only a new enrolment provisions a sign-in; an edit leaves the existing one alone.
+        if (!isEdit) {
+            payload.account = {
+                username: value('accountUsername'),
+                password: document.getElementById('accountPassword').value,
+                active: document.getElementById('accountActive').checked
+            };
+        }
+
+        return payload;
     }
 
     function fill(student) {
@@ -90,6 +101,13 @@
         document.getElementById('crumbAction').textContent = 'Edit';
         document.getElementById('saveLabel').textContent = 'Save Changes';
         document.title = 'Edit Student | School Management';
+
+        // The sign-in already exists, so the account fields are removed rather than
+        // hidden — a hidden `required` input blocks submission and shows nothing.
+        const accountSection = document.getElementById('accountSection');
+        if (accountSection) {
+            accountSection.remove();
+        }
     }
 
     async function loadReferenceData() {

@@ -7,6 +7,8 @@ import com.smartedu.school_management_api.entity.Classroom;
 import com.smartedu.school_management_api.entity.Grade;
 import com.smartedu.school_management_api.entity.Student;
 import com.smartedu.school_management_api.entity.StudentStatus;
+import com.smartedu.school_management_api.entity.User;
+import com.smartedu.school_management_api.entity.UserRole;
 import com.smartedu.school_management_api.exception.BadRequestException;
 import com.smartedu.school_management_api.exception.DuplicateResourceException;
 import com.smartedu.school_management_api.exception.NotFoundException;
@@ -16,6 +18,7 @@ import com.smartedu.school_management_api.repository.GradeRepository;
 import com.smartedu.school_management_api.repository.StudentRepository;
 import com.smartedu.school_management_api.service.SchoolAccessService;
 import com.smartedu.school_management_api.service.StudentService;
+import com.smartedu.school_management_api.service.UserProvisioningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +35,7 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final GradeRepository gradeRepository;
     private final ClassroomRepository classroomRepository;
+    private final UserProvisioningService provisioning;
     private final SchoolAccessService access;
     private final StudentMapper mapper;
 
@@ -77,6 +81,16 @@ public class StudentServiceImpl implements StudentService {
         Classroom classroom = resolveClassroom(request.classroomId(), grade, null);
         validateEnrollmentDate(request);
 
+        // Enrolling a student and giving them portal access are one action; sharing this
+        // transaction means a failure below rolls the account back with the enrolment.
+        User account = provisioning.provisionAccount(
+                request.account(),
+                UserRole.STUDENT,
+                request.firstName().trim() + " " + request.lastName().trim(),
+                request.email(),
+                request.phoneNumber(),
+                grade.getSchool());
+
         Student student = Student.builder()
                 .admissionNumber(admissionNumber)
                 .firstName(request.firstName().trim())
@@ -95,6 +109,7 @@ public class StudentServiceImpl implements StudentService {
                 .grade(grade)
                 .classroom(classroom)
                 .school(grade.getSchool())
+                .userAccount(account)
                 .build();
 
         return mapper.toResponse(studentRepository.save(student));

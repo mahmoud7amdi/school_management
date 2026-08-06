@@ -1,7 +1,9 @@
 package com.smartedu.school_management_api.dto.student;
 
+import com.smartedu.school_management_api.dto.user.AccountCredentials;
 import com.smartedu.school_management_api.entity.Gender;
 import com.smartedu.school_management_api.entity.StudentStatus;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +18,10 @@ import java.time.LocalDate;
  * <p>The school comes from the chosen grade (and, for a school admin, from the caller),
  * so it is never accepted from the client. {@code classroomId} may be null to enrol a
  * student before placing them in a class.
+ *
+ * <p>{@code account} is used on create only, where it provisions the student's login in the
+ * same transaction. On update it is ignored, so editing an enrolment never rewrites
+ * credentials.
  */
 public record StudentRequest(
         @NotBlank(message = "Admission number is required")
@@ -37,6 +43,7 @@ public record StudentRequest(
         @Past(message = "Date of birth must be in the past")
         LocalDate dateOfBirth,
 
+        @NotBlank(message = "Email is required")
         @Email(message = "Please enter a valid email")
         @Size(max = 150)
         String email,
@@ -68,6 +75,10 @@ public record StudentRequest(
         @NotNull(message = "Grade is required")
         Long gradeId,
 
-        Long classroomId
+        Long classroomId,
+
+        /** Sign-in details for the account created with this student. Create only. */
+        @Valid
+        AccountCredentials account
 ) {
 }

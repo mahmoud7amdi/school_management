@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Add User')}"></head>
+<head th:replace="~{fragments/layout :: head('Appoint Administrator')}"></head>
 <body>
 
 <div th:replace="~{fragments/layout :: sidebar}"></div>
@@ -15,20 +15,26 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-1">
                         <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a th:href="@{/dashboard/users/all}" class="text-secondary">Users</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Add</li>
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard/admins/all}" class="text-secondary">Administrators</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Appoint</li>
                     </ol>
                 </nav>
-                <h1>Add New User</h1>
+                <h1>Appoint Administrator</h1>
+                <p class="page-subtitle">
+                    Gives one person administrative control of a school. Teachers, students and
+                    parents are added by that school's own administrator.
+                </p>
             </div>
-            <a th:href="@{/dashboard/users/all}" class="btn btn-light">
-                <i class="ti ti-arrow-left me-1"></i> Back to Users
+            <a th:href="@{/dashboard/admins/all}" class="btn btn-light">
+                <i class="ti ti-arrow-left me-1"></i> Back to Administrators
             </a>
         </div>
 
         <div class="card form-card shadow-sm">
             <div class="card-body p-4 p-lg-5">
-                <form id="addUserForm" class="needs-validation" novalidate>
+                <form id="addAdminForm" class="needs-validation" novalidate>
+
+                    <h6 class="text-uppercase text-secondary small fw-bold mb-3">Account</h6>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label" for="fullName">Full name <span class="text-danger">*</span></label>
@@ -53,31 +59,53 @@
                             <div class="invalid-feedback" data-server-feedback>Password must be at least 6 characters.</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="role">Role <span class="text-danger">*</span></label>
-                            <select id="role" name="role" class="form-select" required></select>
-                            <div class="invalid-feedback" data-server-feedback>Please choose a role.</div>
-                        </div>
-                        <div class="col-md-6">
                             <label class="form-label" for="phoneNumber">Phone</label>
                             <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" maxlength="30" />
                             <div class="invalid-feedback" data-server-feedback></div>
                         </div>
-                        <!--
-                          Shown only when a super admin is appointing a school admin. A
-                          school admin's own users join its school automatically, and a
-                          super admin has no school, so both other cases hide this.
-                        -->
-                        <div class="col-12 d-none" id="schoolField">
+                        <div class="col-md-6">
                             <label class="form-label" for="schoolId">School <span class="text-danger">*</span></label>
-                            <select id="schoolId" name="schoolId" class="form-select"></select>
+                            <select id="schoolId" name="schoolId" class="form-select" required></select>
                             <div class="invalid-feedback" data-server-feedback>Please select a school.</div>
                         </div>
                     </div>
+
+                    <hr class="my-4" />
+                    <h6 class="text-uppercase text-secondary small fw-bold mb-1">Appointment</h6>
+                    <p class="text-secondary small mb-3">
+                        Recorded against the person, so their post survives the account being disabled.
+                    </p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="jobTitle">Job title</label>
+                            <input type="text" id="jobTitle" name="jobTitle" class="form-control"
+                                   placeholder="e.g. Registrar" maxlength="120" />
+                            <div class="invalid-feedback" data-server-feedback></div>
+                            <div class="form-text">Defaults to "School Administrator" if left blank.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="department">Department</label>
+                            <input type="text" id="department" name="department" class="form-control" maxlength="120" />
+                            <div class="invalid-feedback" data-server-feedback></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="office">Office</label>
+                            <input type="text" id="office" name="office" class="form-control" maxlength="60" />
+                            <div class="invalid-feedback" data-server-feedback></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="appointmentDate">Appointment date</label>
+                            <input type="date" id="appointmentDate" name="appointmentDate" class="form-control" />
+                            <div class="invalid-feedback" data-server-feedback></div>
+                            <div class="form-text">Defaults to today.</div>
+                        </div>
+                    </div>
+
                     <div class="d-flex gap-2 mt-4">
                         <button type="submit" class="btn btn-primary" id="saveBtn">
-                            <i class="ti ti-check me-1"></i> Save User
+                            <i class="ti ti-check me-1"></i> Appoint Administrator
                         </button>
-                        <a th:href="@{/dashboard/users/all}" class="btn btn-light">Cancel</a>
+                        <a th:href="@{/dashboard/admins/all}" class="btn btn-light">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -86,7 +114,7 @@
 </div>
 
 <div th:replace="~{fragments/layout :: footer}"></div>
-<script th:src="@{/assets/js/pages/user-form.js}"></script>
+<script th:src="@{/assets/js/pages/admin-form.js}"></script>
 
 </body>
 </html>

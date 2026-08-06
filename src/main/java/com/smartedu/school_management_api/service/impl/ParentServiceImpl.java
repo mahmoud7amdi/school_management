@@ -15,9 +15,9 @@ import com.smartedu.school_management_api.mapper.ParentMapper;
 import com.smartedu.school_management_api.repository.ParentRepository;
 import com.smartedu.school_management_api.repository.StudentGuardianRepository;
 import com.smartedu.school_management_api.repository.StudentRepository;
-import com.smartedu.school_management_api.repository.UserRepository;
 import com.smartedu.school_management_api.service.ParentService;
 import com.smartedu.school_management_api.service.SchoolAccessService;
+import com.smartedu.school_management_api.service.UserProvisioningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Guardian records and the links to their children.
@@ -42,7 +41,7 @@ public class ParentServiceImpl implements ParentService {
     private final ParentRepository parentRepository;
     private final StudentGuardianRepository studentGuardianRepository;
     private final StudentRepository studentRepository;
-    private final UserRepository userRepository;
+    private final UserProvisioningService provisioning;
     private final SchoolAccessService access;
     private final ParentMapper mapper;
 
@@ -73,6 +72,16 @@ public class ParentServiceImpl implements ParentService {
                     "A parent with email '" + email + "' already exists in this school");
         }
 
+        // Guardians sign in to the family portal, so the account is created with the record
+        // rather than linked afterwards. Same transaction: a bad child link rolls both back.
+        User account = provisioning.provisionAccount(
+                request.account(),
+                UserRole.PARENT,
+                request.firstName().trim() + " " + request.lastName().trim(),
+                request.email(),
+                request.phoneNumber(),
+                school);
+
         Parent parent = Parent.builder()
                 .firstName(request.firstName().trim())
                 .lastName(request.lastName().trim())
@@ -80,7 +89,7 @@ public class ParentServiceImpl implements ParentService {
                 .phoneNumber(trimToNull(request.phoneNumber()))
                 .occupation(trimToNull(request.occupation()))
                 .address(trimToNull(request.address()))
-                .userAccount(resolveUserAccount(request.userAccountId(), school.getId(), null))
+                .userAccount(account)
                 .school(school)
                 .build();
 
@@ -109,7 +118,6 @@ public class ParentServiceImpl implements ParentService {
         parent.setPhoneNumber(trimToNull(request.phoneNumber()));
         parent.setOccupation(trimToNull(request.occupation()));
         parent.setAddress(trimToNull(request.address()));
-        parent.setUserAccount(resolveUserAccount(request.userAccountId(), schoolId, id));
 
         Parent saved = parentRepository.save(parent);
         replaceChildLinks(saved, request.children());
@@ -182,33 +190,6 @@ public class ParentServiceImpl implements ParentService {
         // reject a row that is only being re-created.
         studentGuardianRepository.flush();
         studentGuardianRepository.saveAll(links);
-    }
-
-    /**
-     * Links an optional login. The account must be a {@code PARENT} in the same school and
-     * not already claimed by another guardian record — the teacher rule, one role across.
-     */
-    private User resolveUserAccount(UUID userAccountId, Long schoolId, Long currentParentId) {
-        if (userAccountId == null) {
-            return null;
-        }
-        User user = userRepository.findWithSchoolById(userAccountId)
-                .orElseThrow(() -> NotFoundException.of("User", userAccountId));
-
-        if (user.getRole() != UserRole.PARENT) {
-            throw new BadRequestException("The selected user account is not a parent");
-        }
-        if (user.schoolIdOrNull() == null || !user.schoolIdOrNull().equals(schoolId)) {
-            throw new BadRequestException("The selected user account belongs to a different school");
-        }
-
-        boolean claimedByAnother = parentRepository.findByUserAccountId(userAccountId)
-                .filter(existing -> currentParentId == null || !existing.getId().equals(currentParentId))
-                .isPresent();
-        if (claimedByAnother) {
-            throw new DuplicateResourceException("That user account is already linked to another parent");
-        }
-        return user;
     }
 
     private static String normalizeEmail(String email) {

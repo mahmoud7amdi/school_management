@@ -8,6 +8,7 @@ import com.smartedu.school_management_api.dto.user.UpdateProfileRequest;
 import com.smartedu.school_management_api.dto.user.UpdateUserRequest;
 import com.smartedu.school_management_api.dto.user.UserResponse;
 import com.smartedu.school_management_api.entity.School;
+import com.smartedu.school_management_api.entity.SchoolAdmin;
 import com.smartedu.school_management_api.entity.TokenBlacklist;
 import com.smartedu.school_management_api.entity.User;
 import com.smartedu.school_management_api.entity.UserRole;
@@ -16,6 +17,7 @@ import com.smartedu.school_management_api.exception.BadRequestException;
 import com.smartedu.school_management_api.exception.DuplicateResourceException;
 import com.smartedu.school_management_api.exception.NotFoundException;
 import com.smartedu.school_management_api.mapper.UserMapper;
+import com.smartedu.school_management_api.repository.SchoolAdminRepository;
 import com.smartedu.school_management_api.repository.SchoolRepository;
 import com.smartedu.school_management_api.repository.ParentRepository;
 import com.smartedu.school_management_api.repository.StudentRepository;
@@ -40,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,6 +67,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final SchoolRepository schoolRepository;
+    private final SchoolAdminRepository schoolAdminRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
     private final ParentRepository parentRepository;
@@ -183,7 +187,53 @@ public class UserServiceImpl implements UserService {
                 .school(school)
                 .build();
 
-        return userMapper.toResponse(userRepository.save(user));
+        User saved = userRepository.save(user);
+
+        if (targetRole == UserRole.SCHOOL_ADMIN) {
+            createSchoolAdminProfile(request, school, saved);
+        }
+
+        return userMapper.toResponse(saved);
+    }
+
+    /**
+     * Records the post an appointed administrator holds.
+     *
+     * <p>Kept separate from the account so the appointment — job title, office, the date it
+     * started — outlives the login being disabled, and the same person can be re-linked if
+     * their access is later restored.
+     */
+    private void createSchoolAdminProfile(CreateUserRequest request, School school, User account) {
+        String[] names = splitFullName(request.fullName());
+
+        schoolAdminRepository.save(SchoolAdmin.builder()
+                .firstName(names[0])
+                .lastName(names[1])
+                .email(request.email().trim().toLowerCase())
+                .phoneNumber(trimToNull(request.phoneNumber()))
+                .jobTitle(trimToNull(request.jobTitle()) == null ? "School Administrator" : request.jobTitle().trim())
+                .department(trimToNull(request.department()))
+                .office(trimToNull(request.office()))
+                .appointmentDate(request.appointmentDate() == null ? LocalDate.now() : request.appointmentDate())
+                .school(school)
+                .userAccount(account)
+                .build());
+    }
+
+    /**
+     * Splits a display name into the first/last pair the record needs.
+     *
+     * <p>The account carries one {@code fullName} field while the personnel record has two
+     * columns, so a single-word name becomes its own surname rather than failing the
+     * {@code @NotBlank} on {@code lastName}.
+     */
+    private static String[] splitFullName(String fullName) {
+        String trimmed = fullName.trim();
+        int lastSpace = trimmed.lastIndexOf(' ');
+        if (lastSpace < 0) {
+            return new String[]{trimmed, trimmed};
+        }
+        return new String[]{trimmed.substring(0, lastSpace).trim(), trimmed.substring(lastSpace + 1).trim()};
     }
 
     /** Applies the role-creation matrix and returns the school the new user belongs to. */

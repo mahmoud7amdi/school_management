@@ -113,10 +113,6 @@
             const selected = new Set((teacher.subjects || []).map((subject) => String(subject.id)));
             Array.from(document.getElementById('subjectIds').options)
                 .forEach((option) => { option.selected = selected.has(option.value); });
-
-            // The list response only reports whether a login exists, not which one,
-            // so the picker is cleared rather than guessing at a match.
-            document.getElementById('userAccountId').value = '';
         },
         toPayload: () => ({
             employeeNumber: document.getElementById('employeeNumber').value.trim(),
@@ -124,15 +120,15 @@
             lastName: document.getElementById('lastName').value.trim(),
             gender: document.getElementById('gender').value,
             dateOfBirth: document.getElementById('dateOfBirth').value || null,
-            email: document.getElementById('email').value.trim() || null,
+            email: document.getElementById('email').value.trim(),
             phoneNumber: document.getElementById('phoneNumber').value.trim() || null,
             address: document.getElementById('address').value.trim() || null,
             qualification: document.getElementById('qualification').value.trim() || null,
             specialization: document.getElementById('specialization').value.trim() || null,
             hireDate: document.getElementById('hireDate').value,
             status: document.getElementById('status').value,
-            subjectIds: selectedSubjectIds(),
-            userAccountId: document.getElementById('userAccountId').value || null
+            subjectIds: selectedSubjectIds()
+            // No account block: an edit leaves the teacher's existing sign-in untouched.
         }),
         onLoaded: function () {
             if (!Shell.isSuperAdmin()) {
@@ -143,18 +139,11 @@
 
     Shell.requireManager()
         .then(async function () {
-            const [subjects, users] = await Promise.all([
-                Api.get('/api/v1/subjects'),
-                Api.get('/api/v1/users/teachers')
-            ]);
+            const subjects = await Api.get('/api/v1/subjects');
 
             UI.fillSelect(document.getElementById('subjectIds'), subjects, {
                 placeholder: null,
                 label: (subject) => subject.name
-            });
-            UI.fillSelect(document.getElementById('userAccountId'), users, {
-                placeholder: 'No login account',
-                label: (user) => user.fullName + ' (@' + user.username + ')'
             });
 
             return page.load();

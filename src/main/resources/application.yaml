@@ -3,9 +3,16 @@ spring:
     name: school-management-api
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/school_db?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/school_db?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&connectTimeout=3000&socketTimeout=60000
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:}
+    hikari:
+      # A local MySQL that is down should surface as an immediate error, not as a
+      # 30s hang on every request while the pool waits for a connection that will
+      # never come. Raise these if a real environment ever sees legitimate
+      # contention -- they are tuned for a single developer machine.
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:5000}
+      validation-timeout: 2000
 
   jpa:
     # Views never touch lazy associations: entities are mapped to DTOs inside the

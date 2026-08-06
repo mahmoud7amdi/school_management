@@ -1,5 +1,6 @@
 package com.smartedu.school_management_api.dto.parent;
 
+import com.smartedu.school_management_api.dto.user.AccountCredentials;
 import com.smartedu.school_management_api.entity.GuardianRelationship;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -8,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Payload for creating or updating a parent/guardian.
@@ -16,6 +16,10 @@ import java.util.UUID;
  * <p>The school is derived from the caller's tenant, never from the body — the same rule
  * the teacher payload follows. {@code children} replaces the whole set of links on update,
  * so an omitted child is unlinked.
+ *
+ * <p>{@code account} is used on create only, where it provisions the guardian's login in the
+ * same transaction. On update it is ignored, so re-linking children never rewrites
+ * credentials.
  */
 public record ParentRequest(
         @NotBlank(message = "First name is required")
@@ -26,6 +30,7 @@ public record ParentRequest(
         @Size(max = 60, message = "Last name must not exceed 60 characters")
         String lastName,
 
+        @NotBlank(message = "Email is required")
         @Email(message = "Invalid email")
         @Size(max = 150)
         String email,
@@ -39,8 +44,9 @@ public record ParentRequest(
         @Size(max = 255)
         String address,
 
-        /** Optional bridge to a {@code PARENT} account; validated in the service layer. */
-        UUID userAccountId,
+        /** Sign-in details for the account created with this guardian. Create only. */
+        @Valid
+        AccountCredentials account,
 
         @Valid
         List<ChildLink> children

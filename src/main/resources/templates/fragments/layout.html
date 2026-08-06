@@ -71,8 +71,8 @@
                 <span class="text">Administrators</span>
             </a>
             <ul class="dropdown-menu flex-column">
-                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/users/all}">All Administrators</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/users/add}">Appoint Administrator</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/admins/all}">All Administrators</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/admins/add}">Appoint Administrator</a></li>
             </ul>
         </li>
         <li class="nav-item" data-requires-role="SUPER_ADMIN">
@@ -94,16 +94,6 @@
         </li>
         <li class="nav-item dropdown" data-requires-role="SCHOOL_ADMIN">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="nav-icon"><i class="ti ti-users fs-4"></i></span>
-                <span class="text">Users</span>
-            </a>
-            <ul class="dropdown-menu flex-column">
-                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/users/all}">All Users</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/users/add}">Add User</a></li>
-            </ul>
-        </li>
-        <li class="nav-item dropdown" data-requires-role="SCHOOL_ADMIN">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <span class="nav-icon"><i class="ti ti-chalkboard fs-4"></i></span>
                 <span class="text">Teachers</span>
             </a>
@@ -119,7 +109,7 @@
             </a>
             <ul class="dropdown-menu flex-column">
                 <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/students/all}">All Students</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/students/add}">Enroll Student</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard/students/add}">Add Student</a></li>
             </ul>
         </li>
         <li class="nav-item dropdown" data-requires-role="SCHOOL_ADMIN">
@@ -408,13 +398,12 @@
                 <div class="nav-heading px-4 pt-3 small text-uppercase fw-bold text-secondary">Platform</div>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/schools/all}"><i class="ti ti-building-community me-2"></i> All Schools</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/schools/add}"><i class="ti ti-plus me-2"></i> Add School</a>
-                <a class="nav-link px-4 py-2" th:href="@{/dashboard/users/all}"><i class="ti ti-shield-lock me-2"></i> Administrators</a>
+                <a class="nav-link px-4 py-2" th:href="@{/dashboard/admins/all}"><i class="ti ti-shield-lock me-2"></i> Administrators</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/reports}"><i class="ti ti-chart-bar me-2"></i> Reports</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/about}"><i class="ti ti-info-circle me-2"></i> About Page</a>
             </li>
             <li class="nav-item" data-requires-role="SCHOOL_ADMIN">
                 <div class="nav-heading px-4 pt-3 small text-uppercase fw-bold text-secondary">People</div>
-                <a class="nav-link px-4 py-2" th:href="@{/dashboard/users/all}"><i class="ti ti-users me-2"></i> Users</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/teachers/all}"><i class="ti ti-chalkboard me-2"></i> Teachers</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/students/all}"><i class="ti ti-school me-2"></i> Students</a>
                 <a class="nav-link px-4 py-2" th:href="@{/dashboard/parents/all}"><i class="ti ti-users-group me-2"></i> Parents</a>

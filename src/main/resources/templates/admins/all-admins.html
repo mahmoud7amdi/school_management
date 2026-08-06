@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('All Users')}"></head>
+<head th:replace="~{fragments/layout :: head('All Administrators')}"></head>
 <body>
 
 <div th:replace="~{fragments/layout :: sidebar}"></div>
@@ -15,14 +15,14 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-1">
                         <li class="breadcrumb-item"><a th:href="@{/dashboard/index}" class="text-secondary">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Users</li>
+                        <li class="breadcrumb-item active" aria-current="page">Administrators</li>
                     </ol>
                 </nav>
-                <h1>Users</h1>
-                <p class="page-subtitle" id="resultSummary">Loading users...</p>
+                <h1>Administrators</h1>
+                <p class="page-subtitle" id="resultSummary">Loading administrators...</p>
             </div>
-            <a th:href="@{/dashboard/users/add}" class="btn btn-primary">
-                <i class="ti ti-user-plus me-1"></i> Add User
+            <a th:href="@{/dashboard/admins/add}" class="btn btn-primary">
+                <i class="ti ti-user-plus me-1"></i> Appoint Administrator
             </a>
         </div>
 
@@ -31,18 +31,15 @@
                 <div class="input-group">
                     <span class="input-group-text bg-transparent"><i class="ti ti-search"></i></span>
                     <input type="search" id="userSearch" class="form-control"
-                           placeholder="Search name, username or email" aria-label="Search users" />
+                           placeholder="Search name, username or email" aria-label="Search administrators" />
                 </div>
             </div>
             <div class="toolbar-spacer"></div>
             <div>
                 <select id="roleFilter" class="form-select" aria-label="Filter by role">
-                    <option value="">All roles</option>
-                    <option value="SUPER_ADMIN">Super Admin</option>
+                    <option value="">All administrators</option>
                     <option value="SCHOOL_ADMIN">School Admin</option>
-                    <option value="TEACHER">Teacher</option>
-                    <option value="STUDENT">Student</option>
-                    <option value="PARENT">Parent</option>
+                    <option value="SUPER_ADMIN">Super Admin</option>
                 </select>
             </div>
         </div>
@@ -53,7 +50,7 @@
                     <table class="table app-table mb-0 align-middle">
                         <thead>
                         <tr>
-                            <th>User</th>
+                            <th>Administrator</th>
                             <th>Email</th>
                             <th>Role</th>
                             <th class="school-col">School</th>
@@ -62,7 +59,7 @@
                         </tr>
                         </thead>
                         <tbody id="usersTableBody">
-                        <tr><td colspan="6" class="table-state"><i class="ti ti-loader-2"></i>Loading users...</td></tr>
+                        <tr><td colspan="6" class="table-state"><i class="ti ti-loader-2"></i>Loading administrators...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -71,13 +68,13 @@
     </div>
 </div>
 
-<!-- Edit user -->
+<!-- Edit administrator -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <form id="editUserForm" class="needs-validation" novalidate>
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="editUserLabel">Edit User</h5>
+                    <h5 class="modal-title fw-bold" id="editUserLabel">Edit Administrator</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -133,7 +130,7 @@
 </div>
 
 <div th:replace="~{fragments/layout :: footer}"></div>
-<script th:src="@{/assets/js/pages/users-list.js}"></script>
+<script th:src="@{/assets/js/pages/admins-list.js}"></script>
 
 </body>
 </html>
